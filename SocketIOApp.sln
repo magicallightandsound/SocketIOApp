@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketIOApp", "Assembly-CSharp.csproj", "{8801308D-86AC-518B-FCE2-7E4458D3F297}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketIOApp", "Assembly-CSharp-Editor.csproj", "{DBF6AAED-5A7D-B974-45D2-443B1A2B82C4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8801308D-86AC-518B-FCE2-7E4458D3F297}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8801308D-86AC-518B-FCE2-7E4458D3F297}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8801308D-86AC-518B-FCE2-7E4458D3F297}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8801308D-86AC-518B-FCE2-7E4458D3F297}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBF6AAED-5A7D-B974-45D2-443B1A2B82C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBF6AAED-5A7D-B974-45D2-443B1A2B82C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBF6AAED-5A7D-B974-45D2-443B1A2B82C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBF6AAED-5A7D-B974-45D2-443B1A2B82C4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
