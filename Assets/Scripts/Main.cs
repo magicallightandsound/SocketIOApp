@@ -6,9 +6,6 @@ using Dpoch.SocketIO;
 
 public class Main : MonoBehaviour {
 
-
-    //public delegate void Moving(GameObject gameObject);    //public static event CursorStopHover OnCursorStopHover;
-
     SocketIO socket = new SocketIO("ws://acpt-barzoom.herokuapp.com:80/socket.io/?EIO=4&transport=websocket");
     float timeSinceLastRequest = 0;
     string key = "yummy2";
@@ -16,18 +13,13 @@ public class Main : MonoBehaviour {
     bool login = false;
     List<string> joined_members = new List<string>();
     List<string> ready_members = new List<string>();
-    bool start_experience = false;
-    bool end_experience = false;
-    bool shared_experience_leader = false;
-    bool shared_experience_follower = false;
+
     string[] memberNames = null;
     string[] readyMemberNames = null;
 
-    // GameObject to be synced
-    GameObject gameObjectToSync = null;
-
-
-    Dictionary<int, GameObject> idToGameObjectMapper = new Dictionary<int, GameObject>();
+    Dictionary<int, int> inGameID2gameObjectIDMapper = new Dictionary<int, int>();
+    Dictionary<int, GameObject> gameObjectID2GameObjectMapper = new Dictionary<int, GameObject>();
+    Dictionary<int, int> gameObjectID2inGameIDMapper = new Dictionary<int, int>();
 
     enum EngineState
     {
@@ -55,7 +47,7 @@ public class Main : MonoBehaviour {
             for (int i = 0; i < gameObjects.Length; i++)
             {
                 GameObject go = gameObjects[i] as GameObject;
-                idToGameObjectMapper[go.GetInstanceID()] = gameObjects[i]; 
+                gameObjectID2GameObjectMapper[go.GetInstanceID()] = gameObjects[i]; 
             }
 
             string newJson = "{ " +
@@ -63,7 +55,7 @@ public class Main : MonoBehaviour {
                 "\"gameObjectIDs\": " + JsonHelper.arrayToJson<int>(inGameIDs) + "," +
             "}";
 
-            // Sending the game object is done in the /persist_ok event
+            
             socket.Emit("/persist", key + newJson);
         }
     }
@@ -74,7 +66,7 @@ public class Main : MonoBehaviour {
         if (engineState == EngineState.START_EXPERIENCE)
         {
             string json = JsonUtility.ToJson(go);
-            socket.Emit("/Data", key + ", " + json);
+            socket.Emit("/data_gameobject", key + ", " + json);
         }
     }
 
@@ -118,6 +110,12 @@ public class Main : MonoBehaviour {
 
         });
 
+
+        ///
+        /// Advanced Data Reflection and Distribution
+        ///
+
+
         socket.On("/persist_ok", (ev) => {
 
             // [ objectid, objectid, objectid]
@@ -127,18 +125,42 @@ public class Main : MonoBehaviour {
 
             for (int i = 0; i < objectIDs.Length; i++)
             {
-                GameObject go = idToGameObjectMapper[objectIDs[i]];
+                GameObject go = gameObjectID2GameObjectMapper[objectIDs[i]];
                 syncGameObject(go);
             }
         });
 
-        socket.On("/data_ok", (ev) => {
-            string myString = ev.Data[0].ToObject<string>();
+        socket.On("/data_gameobject_ok", (ev) => {
+            string json = ev.Data[0].ToObject<string>();
 
-            GameObject go = JsonUtility.FromJson<GameObject>(myString);
+            GameObject go = JsonUtility.FromJson<GameObject>(json);
 
   
         });
+
+
+        socket.On("/server_requests_persistence", (ev) => {
+            string json = ev.Data[0].ToObject<string>();
+
+            // 	{
+            //		"inGameIDs" : [ 287, 565, 436],
+            //		"gameObjectIDs" : [234, 236, 543]
+            //  }
+
+            Dictionary<string,int[]> payload = JsonUtility.FromJson<Dictionary<string, int[]>>(json);
+
+            int[] inGameIDs = payload["inGameIDs"];
+            int[] gameObjectIDs = payload["gameObjectIDs"];
+
+            for (int i = 0; i < gameObjectIDs.Length; i++)
+            {
+                int gameObjectID = gameObjectIDs[i];
+                int inGameID = inGameIDs[i];
+
+                gameObjectID2inGameIDMapper[gameObjectID] = inGameID;
+            }
+        });
+
 
         socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
         socket.OnClose += () => Debug.Log("Socket closed!");
