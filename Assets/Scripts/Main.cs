@@ -33,6 +33,31 @@ public class Main : MonoBehaviour {
 
     EngineState engineState = EngineState.LOGIN;
 
+    public static Main main = null;
+
+    private void Awake()
+    {
+        Main.main = this;
+    }
+    public void SyncObject(int inGameID, GameObject go, bool awake = false, bool start = false, bool fixedupdate = false, bool destroy = false)
+    {
+
+        if (awake)
+        {
+
+        }
+        else if (start)
+        {
+
+        } else if (fixedupdate)
+        {
+
+        }
+        else if (destroy)
+        {
+
+        }
+   }
 
     /// Reflect an array gameobject to all players in the Room
     /// 

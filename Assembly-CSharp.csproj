@@ -139,8 +139,14 @@
     <Compile Include="Assets\MagicLeap\Examples\Scripts\Visualizers\VideoCaptureVisualizer.cs" />
     <Compile Include="Assets\MagicLeap\Examples\Scripts\WorldScaleExample.cs" />
     <Compile Include="Assets\MagicLeap\Scripts\MLVersion.cs" />
+    <Compile Include="Assets\Scripts\ActsAsBarzoomable.cs" />
+    <Compile Include="Assets\Scripts\Cursor.cs" />
+    <Compile Include="Assets\Scripts\InputController.cs" />
     <Compile Include="Assets\Scripts\Main.cs" />
+    <Compile Include="Assets\Scripts\Meshing.cs" />
     <Compile Include="Assets\Scripts\Packet.cs" />
+    <Compile Include="Assets\Scripts\Placeable.cs" />
+    <Compile Include="Assets\Scripts\Prestige.cs" />
     <Compile Include="Assets\Scripts\SocketIO.cs" />
     <Compile Include="Assets\Scripts\SocketIOConnection.cs" />
     <Compile Include="Assets\Scripts\SocketIOEvent.cs" />
