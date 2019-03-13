@@ -31,7 +31,21 @@ public class Main : MonoBehaviour {
         END_EXPERIENCE
     }
 
+    enum PlayerState
+    {
+        OBSERVING,
+        INTERACTING
+    }
+
+    enum TriggerState
+    {
+        UP,
+        DOWN
+    }
+
     EngineState engineState = EngineState.LOGIN;
+    PlayerState playerState = PlayerState.OBSERVING;
+    TriggerState triggerState = TriggerState.UP;
 
     public static Main main = null;
 
@@ -44,18 +58,15 @@ public class Main : MonoBehaviour {
 
         if (awake)
         {
-
         }
         else if (start)
         {
 
         } else if (fixedupdate)
         {
-
         }
         else if (destroy)
         {
-
         }
    }
 
@@ -155,12 +166,18 @@ public class Main : MonoBehaviour {
             }
         });
 
-        socket.On("/data_gameobject_ok", (ev) => {
+        socket.On("/data_ok", (ev) => {
             string json = ev.Data[0].ToObject<string>();
 
-            GameObject go = JsonUtility.FromJson<GameObject>(json);
-
-  
+            switch (playerState)
+            {
+                case PlayerState.OBSERVING:
+                    break;
+                case PlayerState.INTERACTING:
+                    break;
+                default:
+                    break;
+            }
         });
 
 
@@ -193,13 +210,14 @@ public class Main : MonoBehaviour {
 
         socket.Connect();
 	}
-	
-	// Update is called once per frame
-	void Update () {
 
-        // Every two seconds
+    protected void OnEnable()    {        InputController.OnTriggerDown += OnTriggerDown;        InputController.OnTriggerUp += OnTriggerUp;    }    protected void OnDisable()    {        InputController.OnTriggerDown -= OnTriggerDown;        InputController.OnTriggerUp -= OnTriggerUp;    }
+    // Update is called once per frame
+    void Update () {
+
+        // Every .33 seconds
         timeSinceLastRequest += Time.deltaTime;
-        if (timeSinceLastRequest > 2)
+        if (timeSinceLastRequest > 0.33f)
         {
             timeSinceLastRequest = 0f;
 
@@ -241,7 +259,14 @@ public class Main : MonoBehaviour {
                     break;
                 case EngineState.START_EXPERIENCE:
                     {
-                         
+                        if (triggerState == TriggerState.DOWN)
+                        {
+                            playerState = PlayerState.INTERACTING;
+                        } else
+                        {
+                            playerState = PlayerState.OBSERVING;
+                        }
+
                     }
                     break;
                 case EngineState.END_EXPERIENCE:
@@ -253,7 +278,23 @@ public class Main : MonoBehaviour {
                     break;
             }            
         }
-	}
+
+
+
+    }
+
+
+    public void OnTriggerDown(byte controllerId, float value, GameObject gameObject, Transform cursorTransform)
+    {
+
+    }
+
+    public void OnTriggerUp(byte controllerId, float value, GameObject gameObject, Transform cursorTransform)
+    {
+
+    }
+
+
 }
 
 
