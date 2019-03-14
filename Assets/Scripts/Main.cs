@@ -39,7 +39,7 @@ public class Main : MonoBehaviour {
 
     EngineState engineState = EngineState.LOGIN;
     
-    private static Main main = null;
+    public static Main main = null;
 
     private void Awake()
     {
