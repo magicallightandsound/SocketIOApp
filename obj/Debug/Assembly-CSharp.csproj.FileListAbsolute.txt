@@ -175,8 +175,6 @@ C:/Users/Rodney/Documents/MLProjects/SocketIOApp/obj/Debug/Assembly-CSharp.pdb
 C:/Users/Rodney/Documents/MLProjects/SocketIOApp/obj/Debug/Assembly-CSharp.csprojAssemblyReference.cache
 /Users/rodneydeveloper/Hack/SocketIOApp.github/obj/Debug/Assembly-CSharp.csprojAssemblyReference.cache
 /Users/rodneydeveloper/Hack/SocketIOApp.github/obj/Debug/Assembly-CSharp.csproj.CoreCompileInputs.cache
-/Users/rodneydeveloper/Hack/SocketIOApp.github/obj/Debug/Assembly-CSharp.dll
-/Users/rodneydeveloper/Hack/SocketIOApp.github/obj/Debug/Assembly-CSharp.pdb
 /Users/rodneydeveloper/Hack/SocketIOApp.github/Temp/bin/Debug/Assembly-CSharp.dll
 /Users/rodneydeveloper/Hack/SocketIOApp.github/Temp/bin/Debug/Assembly-CSharp.pdb
 /Users/rodneydeveloper/Hack/SocketIOApp.github/Temp/bin/Debug/Boo.Lang.dll
@@ -426,3 +424,5 @@ C:/Users/Rodney/Documents/MLProjects/SocketIOApp/obj/Debug/Assembly-CSharp.cspro
 /Users/rodneydeveloper/Hack/SocketIOApp.github/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
 /Users/rodneydeveloper/Hack/SocketIOApp.github/Temp/bin/Debug/Unity.IvyParser.dll.mdb
 /Users/rodneydeveloper/Hack/SocketIOApp.github/obj/Debug/Assembly-CSharp.csproj.CopyComplete
+/Users/rodneydeveloper/Hack/SocketIOApp.github/obj/Debug/Assembly-CSharp.dll
+/Users/rodneydeveloper/Hack/SocketIOApp.github/obj/Debug/Assembly-CSharp.pdb

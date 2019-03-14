@@ -18,6 +18,7 @@ public class Main : MonoBehaviour {
     string[] memberNames = null;
     string[] readyMemberNames = null;
 
+    bool isLeader = false;
 
     Dictionary<string, string> payload = new Dictionary<string, string>();
 
@@ -25,6 +26,7 @@ public class Main : MonoBehaviour {
     {
         LOGIN,
         JOIN,
+        INIT,
         WAITING,
         VISITOR,
         START_EXPERIENCE,
@@ -35,7 +37,7 @@ public class Main : MonoBehaviour {
 
     EngineState engineState = EngineState.LOGIN;
     
-    public static Main main = null;
+    private static Main main = null;
 
     private void Awake()
     {
@@ -85,6 +87,8 @@ public class Main : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+
+
 
         Debug.Log("Ready");
 
@@ -156,7 +160,19 @@ public class Main : MonoBehaviour {
                     break;
                 case 3:
                     // Fixed Update
-                    GameObject go = Prestige.GameObjectFactory.createFromPayload(payload);
+                    GameObject go = Prestige.GameObjectFactory.remoteInstanceID2GameObject[remoteInstanceID];
+                    if (go != null)
+                    {
+                        Prestige.GameObjectFactory.fixedUpdateOfRemoteInstanceID(remoteInstanceID, payload);
+                    } else {
+
+                        // We have rejoined a Shared Experience, we must initialize the GameObject before
+                        // we can update its position/rotation
+
+                        GameObject gogo = Prestige.GameObjectFactory.createFromPayload(payload);
+                        gogo.SetActive(true);
+
+                    }
                     break;
                 case 4:
                     // Destroy
@@ -197,6 +213,7 @@ public class Main : MonoBehaviour {
             {
                 case EngineState.LOGIN:
                     {
+
                         Debug.Log("LOGIN");
                         socket.Emit("/login", key);
                         engineState = EngineState.JOIN;
@@ -206,22 +223,38 @@ public class Main : MonoBehaviour {
                     {
                         Debug.Log("JOIN");
                         socket.Emit("/join", key + ", myfunkyroom");
+                        engineState = EngineState.INIT;
+                    }
+                    break;
+                case EngineState.INIT: 
+                    {
+                        isLeader = (joined_members.Count == 1);
+
+                        if (isLeader)
+                        {
+                            // Initialize, pre Experience, as first joined
+                        }
+                        else
+                        {
+                            // Initialize, pre Experience as 2nd or Nth joined
+                        }
+
+                        socket.Emit("/player_ready", key);
                         engineState = EngineState.WAITING;
                     }
                     break;
                 case EngineState.WAITING:
                     {
                         Debug.Log("WAITING");
-                        socket.Emit("/player_ready", key);
+
                         socket.Emit("/members", key);
                         socket.Emit("/whois_ready", "key");
 
-                        bool isEveryoneReady = (joined_members.Count == this.ready_members.Count);
-
+                        bool isEveryoneReady = (joined_members.Count == this.ready_members.Count && joined_members.Count > 1);
 
                         if (isEveryoneReady)
                         {
-                            bool isLeader = (joined_members.Count == 1);
+
                             if (isLeader)
                             {
                                 // Starting the MagicVerse
@@ -237,12 +270,15 @@ public class Main : MonoBehaviour {
                     break;
                 case EngineState.START_EXPERIENCE:
                     {
-                        bool isLeader = (joined_members.Count == 1);
                         if (isLeader)
                         {
-                            // Initialize as Leader
+                            // Initialize the experience, as Leader
+                            GameObject gameObject = Instantiate(Resources.Load("SharedCube") as GameObject);
+                            gameObject.SetActive(true);
+
                         } else {
-                            // Initialize as not the Leader
+                            // We're not the leader, however we will automatically
+                            // build the scene, as we respond to incoming /data payloads
                         }
                         engineState = EngineState.SHARING_EXPERIENCE;
                     }
