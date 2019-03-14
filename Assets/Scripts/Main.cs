@@ -22,6 +22,8 @@ public class Main : MonoBehaviour {
 
     Dictionary<string, string> payload = new Dictionary<string, string>();
 
+    float timeOut = 2.0f;
+
     enum EngineState
     {
         LOGIN,
@@ -93,38 +95,77 @@ public class Main : MonoBehaviour {
         Debug.Log("Ready");
 
         socket.OnOpen += () => {
-            socket.Emit("/login", key);
         };
 
         socket.On("/login_ok", (ev) => {
+            Debug.Log("LOGIN_OK");
             socket.Emit("/join", key + "," + "police2");
-            engineState = EngineState.LOGIN;
+            engineState = EngineState.JOIN;
         });
 
         socket.On("/join_ok", (ev) => {
-            engineState = EngineState.JOIN;
+            Debug.Log("JOIN_OK");
+            engineState = EngineState.INIT;
+        });
+
+
+        socket.On("/info", (ev) => {
+            string myString = ev.Data[0].ToObject<string>();
+            Debug.Log(myString);
+
+
+        });
+
+        socket.On("/warn", (ev) => {
+            string myString = ev.Data[0].ToObject<string>();
+            Debug.Log(myString);
+
+
+        });
+
+        socket.On("/debug", (ev) => {
+            string myString = ev.Data[0].ToObject<string>();
+            Debug.Log(myString);
+
+
         });
 
         socket.On("/pong", (ev) => {
             string myString = ev.Data[0].ToObject<string>();
-            Debug.Log("Received pong");
+            //Debug.Log("Received pong");
 
 
         });
 
         socket.On("/members_ok", (ev) => {
+            Debug.Log("MEMBERS_OK");
             string myString = ev.Data[0].ToObject<string>();
  
             memberNames = JsonHelper.getJsonArray<string>(myString);
             Debug.Log("ready =" + memberNames);
         });
 
-        socket.On("/whois_ready", (ev) => {
+        socket.On("/whois_ready_ok", (ev) => {
+            Debug.Log("WHOIS_READY_OK");
             string myString = ev.Data[0].ToObject<string>();
             readyMemberNames = JsonHelper.getJsonArray<string>(myString);
             Debug.Log("ready =" + readyMemberNames);
 
         });
+
+        socket.On("/player_ready_ok", (ev) => {
+            Debug.Log("PLAYER_READY_OK");
+            //string myString = ev.Data[0].ToObject<string>();
+            //readyMemberNames = JsonHelper.getJsonArray<string>(myString);
+            Debug.Log("ready =" + readyMemberNames);
+            engineState = EngineState.WAITING;
+        });
+
+        socket.On("/start_experience_ok", (ev) => {
+            Debug.Log("START_EXPERIENCE_OK");
+            engineState = EngineState.SHARING_EXPERIENCE;
+        });
+
 
 
         socket.On("/data_ok", (ev) => {
@@ -201,12 +242,12 @@ public class Main : MonoBehaviour {
 
         // Every .33 seconds
         timeSinceLastRequest += Time.deltaTime;
-        if (timeSinceLastRequest > 0.33f)
+        if (timeSinceLastRequest > timeOut)
         {
             timeSinceLastRequest = 0f;
 
             socket.Emit("/ping", "hello");
-            Debug.Log("Sent ping");
+            //Debug.Log("Sent ping");
 
             string key = "yummy2";
             switch (engineState)
@@ -216,18 +257,19 @@ public class Main : MonoBehaviour {
 
                         Debug.Log("LOGIN");
                         socket.Emit("/login", key);
-                        engineState = EngineState.JOIN;
+
                     }
                     break;
                 case EngineState.JOIN:
                     {
                         Debug.Log("JOIN");
                         socket.Emit("/join", key + ", myfunkyroom");
-                        engineState = EngineState.INIT;
+
                     }
                     break;
                 case EngineState.INIT: 
                     {
+                        Debug.Log("INIT");
                         isLeader = (joined_members.Count == 1);
 
                         if (isLeader)
@@ -240,7 +282,7 @@ public class Main : MonoBehaviour {
                         }
 
                         socket.Emit("/player_ready", key);
-                        engineState = EngineState.WAITING;
+
                     }
                     break;
                 case EngineState.WAITING:
@@ -248,7 +290,7 @@ public class Main : MonoBehaviour {
                         Debug.Log("WAITING");
 
                         socket.Emit("/members", key);
-                        socket.Emit("/whois_ready", "key");
+                        socket.Emit("/whois_ready", key);
 
                         bool isEveryoneReady = (joined_members.Count == this.ready_members.Count && joined_members.Count > 1);
 
@@ -261,36 +303,42 @@ public class Main : MonoBehaviour {
                                 socket.Emit("/start_experience", key);
                             } else {
                                 // Rejoining shared experience in progress
+                                engineState = EngineState.SHARING_EXPERIENCE;
                             }
 
-                            engineState = EngineState.START_EXPERIENCE;
+
 
                         } 
                     }
                     break;
                 case EngineState.START_EXPERIENCE:
                     {
+                        Debug.Log("START_EXPERIENCE");
                         if (isLeader)
                         {
                             // Initialize the experience, as Leader
-                            GameObject gameObject = Instantiate(Resources.Load("SharedCube") as GameObject);
-                            gameObject.SetActive(true);
+                            GameObject go = Instantiate(Resources.Load("SharedCube") as GameObject);
+                            go.SetActive(true);
 
                         } else {
                             // We're not the leader, however we will automatically
                             // build the scene, as we respond to incoming /data payloads
                         }
+
+                        // Realtime
+                        timeOut = -1.0f;
+
                         engineState = EngineState.SHARING_EXPERIENCE;
                     }
                     break;
                 case EngineState.SHARING_EXPERIENCE:
                     {
-
+                        Debug.Log("SHARING_EXPERIENCE");
                     }
                     break;
                 case EngineState.END_EXPERIENCE:
                     {
-
+                        Debug.Log("END_EXPERIENCE");
                     }
                     break;
                 default:
