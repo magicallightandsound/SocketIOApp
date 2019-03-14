@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using Dpoch.SocketIO;
+using System;
+using Prestige;
 
 public class Main : MonoBehaviour {
 
     SocketIO socket = new SocketIO("ws://acpt-barzoom.herokuapp.com:80/socket.io/?EIO=4&transport=websocket");
     float timeSinceLastRequest = 0;
     string key = "yummy2";
-    bool joined = false;
-    bool login = false;
+
     List<string> joined_members = new List<string>();
     List<string> ready_members = new List<string>();
 
     string[] memberNames = null;
     string[] readyMemberNames = null;
 
-    Dictionary<int, int> inGameID2gameObjectIDMapper = new Dictionary<int, int>();
-    Dictionary<int, GameObject> gameObjectID2GameObjectMapper = new Dictionary<int, GameObject>();
-    Dictionary<int, int> gameObjectID2inGameIDMapper = new Dictionary<int, int>();
+
+    Dictionary<string, string> payload = new Dictionary<string, string>();
 
     enum EngineState
     {
@@ -28,84 +28,60 @@ public class Main : MonoBehaviour {
         WAITING,
         VISITOR,
         START_EXPERIENCE,
+        SHARING_EXPERIENCE,
         END_EXPERIENCE
     }
 
-    enum PlayerState
-    {
-        OBSERVING,
-        INTERACTING
-    }
-
-    enum TriggerState
-    {
-        UP,
-        DOWN
-    }
 
     EngineState engineState = EngineState.LOGIN;
-    PlayerState playerState = PlayerState.OBSERVING;
-    TriggerState triggerState = TriggerState.UP;
-
+    
     public static Main main = null;
 
     private void Awake()
     {
         Main.main = this;
     }
-    public void SyncObject(int inGameID, GameObject go, bool awake = false, bool start = false, bool fixedupdate = false, bool destroy = false)
+    public void SyncObject(string resourceName, GameObject go, bool awake = false, bool start = false, bool fixedupdate = false, bool destroy = false)
     {
+    
+        payload["resource_name"] = resourceName;
+        Vector3 position = go.GetComponent<Rigidbody>().transform.position;
+        Quaternion rotation = go.GetComponent<Rigidbody>().transform.rotation;
+
+        payload["pos-x"] = position.x.ToString();
+        payload["pos-y"] = position.y.ToString();
+        payload["pos-z"] = position.z.ToString();
+
+        payload["rot-w"] = rotation.w.ToString();
+        payload["rot-x"] = rotation.x.ToString();
+        payload["rot-y"] = rotation.z.ToString();
+        payload["rot-z"] = rotation.z.ToString();
 
         if (awake)
         {
+            payload["action"] = 1.ToString(); //"awake";
+            socket.Emit("/data", payload);
         }
         else if (start)
         {
-
+            payload["action"] = 2.ToString(); //"start";
+            socket.Emit("/data", payload);
         } else if (fixedupdate)
         {
+            payload["action"] = 3.ToString(); //"fixedupdate";
+            socket.Emit("/data", payload);
         }
         else if (destroy)
         {
+            payload.Clear();    
+            payload["resource_name"] = resourceName;
+  
+            payload["instanceID"] = go.GetInstanceID().ToString();
+
+            payload["action"] = 4.ToString(); //"destroy";
+            socket.Emit("/data", payload);
         }
    }
-
-    /// Reflect an array gameobject to all players in the Room
-    /// 
-    /// The game objects' identifier and in-game identifier are persisted on the
-    /// lobby server, so that all the other players know which object to move
-    /// 
-    void syncGameObjectIDs(int[] inGameIDs, GameObject[] gameObjects)
-    {
-        if (engineState == EngineState.START_EXPERIENCE)
-        {
-            // Map the game object instance id to the game object
-            for (int i = 0; i < gameObjects.Length; i++)
-            {
-                GameObject go = gameObjects[i] as GameObject;
-                gameObjectID2GameObjectMapper[go.GetInstanceID()] = gameObjects[i]; 
-            }
-
-            string newJson = "{ " +
-                "\"inGameIDs\": " + JsonHelper.arrayToJson<int>(inGameIDs) + "," +
-                "\"gameObjectIDs\": " + JsonHelper.arrayToJson<int>(inGameIDs) + "," +
-            "}";
-
-            
-            socket.Emit("/persist", key + newJson);
-        }
-    }
-
-
-    void syncGameObject(GameObject go)
-    {
-        if (engineState == EngineState.START_EXPERIENCE)
-        {
-            string json = JsonUtility.ToJson(go);
-            socket.Emit("/data_gameobject", key + ", " + json);
-        }
-    }
-
 
     // Use this for initialization
     void Start () {
@@ -118,11 +94,11 @@ public class Main : MonoBehaviour {
 
         socket.On("/login_ok", (ev) => {
             socket.Emit("/join", key + "," + "police2");
-            login = true;
+            engineState = EngineState.LOGIN;
         });
 
         socket.On("/join_ok", (ev) => {
-            joined = true;
+            engineState = EngineState.JOIN;
         });
 
         socket.On("/pong", (ev) => {
@@ -147,61 +123,53 @@ public class Main : MonoBehaviour {
         });
 
 
-        ///
-        /// Advanced Data Reflection and Distribution
-        ///
-
-
-        socket.On("/persist_ok", (ev) => {
-
-            // [ objectid, objectid, objectid]
-            string myString = ev.Data[0].ToObject<string>();
-            int[] objectIDs = JsonHelper.getJsonArray<int>(myString);
-            Debug.Log("ready =" + readyMemberNames);
-
-            for (int i = 0; i < objectIDs.Length; i++)
-            {
-                GameObject go = gameObjectID2GameObjectMapper[objectIDs[i]];
-                syncGameObject(go);
-            }
-        });
-
         socket.On("/data_ok", (ev) => {
+
+            // Do not accept any incoming data until we are ready
+            if (engineState != EngineState.SHARING_EXPERIENCE)
+            {
+                return;
+            }
+
             string json = ev.Data[0].ToObject<string>();
 
-            switch (playerState)
+            Dictionary<string, string> payload = JsonUtility.FromJson<Dictionary<string,string> >(json);
+
+
+            int remoteInstanceID = Int32.Parse(payload["instanceID"]);
+
+            string action = payload["action"];
+            int act = Int32.Parse(action);
+
+
+            switch (act)
             {
-                case PlayerState.OBSERVING:
+                case 1:
+                    // Awake
+                    GameObject awakeGo = Prestige.GameObjectFactory.createFromPayload(payload);
                     break;
-                case PlayerState.INTERACTING:
+                case 2:
+                    // Start
+
+                    GameObject startGo = Prestige.GameObjectFactory.createFromRemoteInstanceID(remoteInstanceID);
+                    startGo.SetActive(true);
+                    break;
+                case 3:
+                    // Fixed Update
+                    GameObject go = Prestige.GameObjectFactory.createFromPayload(payload);
+                    break;
+                case 4:
+                    // Destroy
+                 
+                    Prestige.GameObjectFactory.DestroyGameObjectWithRemoteInstanceID(remoteInstanceID);
                     break;
                 default:
                     break;
             }
+
         });
 
 
-        socket.On("/server_requests_persistence", (ev) => {
-            string json = ev.Data[0].ToObject<string>();
-
-            // 	{
-            //		"inGameIDs" : [ 287, 565, 436],
-            //		"gameObjectIDs" : [234, 236, 543]
-            //  }
-
-            Dictionary<string,int[]> payload = JsonUtility.FromJson<Dictionary<string, int[]>>(json);
-
-            int[] inGameIDs = payload["inGameIDs"];
-            int[] gameObjectIDs = payload["gameObjectIDs"];
-
-            for (int i = 0; i < gameObjectIDs.Length; i++)
-            {
-                int gameObjectID = gameObjectIDs[i];
-                int inGameID = inGameIDs[i];
-
-                gameObjectID2inGameIDMapper[gameObjectID] = inGameID;
-            }
-        });
 
 
         socket.OnConnectFailed += () => Debug.Log("Socket failed to connect!");
@@ -211,7 +179,7 @@ public class Main : MonoBehaviour {
         socket.Connect();
 	}
 
-    protected void OnEnable()    {        InputController.OnTriggerDown += OnTriggerDown;        InputController.OnTriggerUp += OnTriggerUp;    }    protected void OnDisable()    {        InputController.OnTriggerDown -= OnTriggerDown;        InputController.OnTriggerUp -= OnTriggerUp;    }
+ 
     // Update is called once per frame
     void Update () {
 
@@ -249,23 +217,38 @@ public class Main : MonoBehaviour {
                         socket.Emit("/whois_ready", "key");
 
                         bool isEveryoneReady = (joined_members.Count == this.ready_members.Count);
-                        bool isLeader = (joined_members.Count == 1);
 
-                        if (isEveryoneReady && isLeader)
+
+                        if (isEveryoneReady)
                         {
-                            socket.Emit("/start_experience", key);
-                        }
+                            bool isLeader = (joined_members.Count == 1);
+                            if (isLeader)
+                            {
+                                // Starting the MagicVerse
+                                socket.Emit("/start_experience", key);
+                            } else {
+                                // Rejoining shared experience in progress
+                            }
+
+                            engineState = EngineState.START_EXPERIENCE;
+
+                        } 
                     }
                     break;
                 case EngineState.START_EXPERIENCE:
                     {
-                        if (triggerState == TriggerState.DOWN)
+                        bool isLeader = (joined_members.Count == 1);
+                        if (isLeader)
                         {
-                            playerState = PlayerState.INTERACTING;
-                        } else
-                        {
-                            playerState = PlayerState.OBSERVING;
+                            // Initialize as Leader
+                        } else {
+                            // Initialize as not the Leader
                         }
+                        engineState = EngineState.SHARING_EXPERIENCE;
+                    }
+                    break;
+                case EngineState.SHARING_EXPERIENCE:
+                    {
 
                     }
                     break;
@@ -282,18 +265,6 @@ public class Main : MonoBehaviour {
 
 
     }
-
-
-    public void OnTriggerDown(byte controllerId, float value, GameObject gameObject, Transform cursorTransform)
-    {
-
-    }
-
-    public void OnTriggerUp(byte controllerId, float value, GameObject gameObject, Transform cursorTransform)
-    {
-
-    }
-
 
 }
 

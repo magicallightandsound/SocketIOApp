@@ -10,13 +10,8 @@ public class ActsAsBarzoomable : MonoBehaviour
     private Vector3 lastPos;
     private float t = 0.0f;
 
-    public static Dictionary<int, GameObject> gameObjectID2gameObject = new Dictionary<int, GameObject>();
-    public static Dictionary<int, int> inGameID2gameObjectID = new Dictionary<int, int>();
-    public static Dictionary<int, int> gameObjectID2inGameID = new Dictionary<int, int>();
-
-
     [SerializeField]
-    public int inGameIdentifier;
+    public string resourceName;
 
 
     [SerializeField]
@@ -25,13 +20,9 @@ public class ActsAsBarzoomable : MonoBehaviour
 
     private void Awake()
     {
-        if (inGameIdentifier > 0)
+        if (resourceName != null)
         {
-            inGameID2gameObjectID[inGameIdentifier] = gameObject.GetInstanceID();
-            gameObjectID2gameObject[gameObject.GetInstanceID()] = gameObject;
-            gameObjectID2inGameID[gameObject.GetInstanceID()] = inGameIdentifier;
-
-            main.SyncObject(inGameIdentifier, gameObject, true);
+            main.SyncObject(resourceName, gameObject, true);
         }
     }
 
@@ -50,13 +41,13 @@ public class ActsAsBarzoomable : MonoBehaviour
         t = t + Time.deltaTime;
         if (t > 1.0f)
         {
-            if (inGameIdentifier > 0)
+            if (resourceName != null)
             {
                 curPos = transform.GetComponent<Rigidbody>().position;
                 if (curPos != lastPos)
                 {
                     lastPos = curPos;
-                    main.SyncObject(inGameIdentifier, gameObject, false, true);
+                    main.SyncObject(resourceName, gameObject, false, true);
                 }
                 
             }
@@ -70,14 +61,9 @@ public class ActsAsBarzoomable : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (inGameIdentifier > 0)
+        if (resourceName != null)
         {
-            int gameObjectID = inGameID2gameObjectID[inGameIdentifier];
-            inGameID2gameObjectID.Remove(inGameIdentifier);
-            gameObjectID2gameObject.Remove(gameObjectID);
-            gameObjectID2inGameID.Remove(gameObjectID);
-
-            main.SyncObject(inGameIdentifier, gameObject, false, false, true);
+            main.SyncObject(resourceName, gameObject, false, false, true);
         }
     }
 }
