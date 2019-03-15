@@ -12,8 +12,7 @@ public class Main : MonoBehaviour {
     float timeSinceLastRequest = 0;
     string key = "yummy2";
 
-    List<string> joined_members = new List<string>();
-    List<string> ready_members = new List<string>();
+
 
     string[] memberNames = null;
     string[] readyMemberNames = null;
@@ -95,11 +94,12 @@ public class Main : MonoBehaviour {
         Debug.Log("Ready");
 
         socket.OnOpen += () => {
+//
         };
 
         socket.On("/login_ok", (ev) => {
             Debug.Log("LOGIN_OK");
-            socket.Emit("/join", key + "," + "police2");
+
             engineState = EngineState.JOIN;
         });
 
@@ -109,21 +109,21 @@ public class Main : MonoBehaviour {
         });
 
 
-        socket.On("/info", (ev) => {
+        socket.On("/info_ok", (ev) => {
             string myString = ev.Data[0].ToObject<string>();
             Debug.Log(myString);
 
 
         });
 
-        socket.On("/warn", (ev) => {
+        socket.On("/warn_ok", (ev) => {
             string myString = ev.Data[0].ToObject<string>();
             Debug.Log(myString);
 
 
         });
 
-        socket.On("/debug", (ev) => {
+        socket.On("/debug_ok", (ev) => {
             string myString = ev.Data[0].ToObject<string>();
             Debug.Log(myString);
 
@@ -142,14 +142,14 @@ public class Main : MonoBehaviour {
             string myString = ev.Data[0].ToObject<string>();
  
             memberNames = JsonHelper.getJsonArray<string>(myString);
-            Debug.Log("ready =" + memberNames);
+            Debug.Log("members =" + myString);
         });
 
         socket.On("/whois_ready_ok", (ev) => {
             Debug.Log("WHOIS_READY_OK");
             string myString = ev.Data[0].ToObject<string>();
             readyMemberNames = JsonHelper.getJsonArray<string>(myString);
-            Debug.Log("ready =" + readyMemberNames);
+            Debug.Log("ready =" + myString);
 
         });
 
@@ -157,13 +157,13 @@ public class Main : MonoBehaviour {
             Debug.Log("PLAYER_READY_OK");
             //string myString = ev.Data[0].ToObject<string>();
             //readyMemberNames = JsonHelper.getJsonArray<string>(myString);
-            Debug.Log("ready =" + readyMemberNames);
+            //Debug.Log("ready =" + readyMemberNames);
             engineState = EngineState.WAITING;
         });
 
         socket.On("/start_experience_ok", (ev) => {
             Debug.Log("START_EXPERIENCE_OK");
-            engineState = EngineState.SHARING_EXPERIENCE;
+            engineState = EngineState.START_EXPERIENCE;
         });
 
 
@@ -236,7 +236,8 @@ public class Main : MonoBehaviour {
         socket.Connect();
 	}
 
- 
+ 
+
     // Update is called once per frame
     void Update () {
 
@@ -249,7 +250,7 @@ public class Main : MonoBehaviour {
             socket.Emit("/ping", "hello");
             //Debug.Log("Sent ping");
 
-            string key = "yummy2";
+            string key = "yummy3";
             switch (engineState)
             {
                 case EngineState.LOGIN:
@@ -263,14 +264,14 @@ public class Main : MonoBehaviour {
                 case EngineState.JOIN:
                     {
                         Debug.Log("JOIN");
-                        socket.Emit("/join", key + ", myfunkyroom");
+                        socket.Emit("/join", key + ", myfunkyroom5");
 
                     }
                     break;
                 case EngineState.INIT: 
                     {
                         Debug.Log("INIT");
-                        isLeader = (joined_members.Count == 1);
+                        isLeader = (memberNames.Length == 1);
 
                         if (isLeader)
                         {
@@ -292,9 +293,9 @@ public class Main : MonoBehaviour {
                         socket.Emit("/members", key);
                         socket.Emit("/whois_ready", key);
 
-                        bool isEveryoneReady = (joined_members.Count == this.ready_members.Count && joined_members.Count > 1);
+                        bool isEveryoneReady = (memberNames.Length == readyMemberNames.Length && memberNames.Length > 1);
 
-                        if (isEveryoneReady)
+                        if (isEveryoneReady)  
                         {
 
                             if (isLeader)
@@ -314,7 +315,7 @@ public class Main : MonoBehaviour {
                 case EngineState.START_EXPERIENCE:
                     {
                         Debug.Log("START_EXPERIENCE");
-                        if (isLeader)
+                        if (true)  //isLeader
                         {
                             // Initialize the experience, as Leader
                             GameObject go = Instantiate(Resources.Load("SharedCube") as GameObject);
