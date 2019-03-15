@@ -11,11 +11,12 @@ public class Main : MonoBehaviour {
     SocketIO socket = new SocketIO("ws://acpt-barzoom.herokuapp.com:80/socket.io/?EIO=4&transport=websocket");
     float timeSinceLastRequest = 0;
     string key = "yummy2";
+    string room = "myfunkyroom7";
 
 
 
-    string[] memberNames = null;
-    string[] readyMemberNames = null;
+    List<string> memberNames = new List<string>();
+    List<string> readyMemberNames = new List<string>();
 
     bool isLeader = false;
 
@@ -105,7 +106,8 @@ public class Main : MonoBehaviour {
 
         socket.On("/join_ok", (ev) => {
             Debug.Log("JOIN_OK");
-            engineState = EngineState.INIT;
+            socket.Emit("/members", key);
+            
         });
 
 
@@ -141,14 +143,19 @@ public class Main : MonoBehaviour {
             Debug.Log("MEMBERS_OK");
             string myString = ev.Data[0].ToObject<string>();
  
-            memberNames = JsonHelper.getJsonArray<string>(myString);
+            memberNames.AddRange(JsonHelper.getJsonArray<string>(myString));
             Debug.Log("members =" + myString);
+
+            if (engineState == EngineState.JOIN)
+            {
+                engineState = EngineState.INIT;
+            }
         });
 
         socket.On("/whois_ready_ok", (ev) => {
             Debug.Log("WHOIS_READY_OK");
             string myString = ev.Data[0].ToObject<string>();
-            readyMemberNames = JsonHelper.getJsonArray<string>(myString);
+            readyMemberNames.AddRange(JsonHelper.getJsonArray<string>(myString));
             Debug.Log("ready =" + myString);
 
         });
@@ -264,14 +271,14 @@ public class Main : MonoBehaviour {
                 case EngineState.JOIN:
                     {
                         Debug.Log("JOIN");
-                        socket.Emit("/join", key + ", myfunkyroom5");
+                        socket.Emit("/join", key + ", " + room);
 
                     }
                     break;
                 case EngineState.INIT: 
                     {
                         Debug.Log("INIT");
-                        isLeader = (memberNames.Length == 1);
+                        
 
                         if (isLeader)
                         {
@@ -293,7 +300,8 @@ public class Main : MonoBehaviour {
                         socket.Emit("/members", key);
                         socket.Emit("/whois_ready", key);
 
-                        bool isEveryoneReady = (memberNames.Length == readyMemberNames.Length && memberNames.Length > 1);
+                        isLeader = (memberNames.Count == 1);
+                        bool isEveryoneReady = (memberNames.Count == readyMemberNames.Count && memberNames.Count > 1);
 
                         if (isEveryoneReady)  
                         {
