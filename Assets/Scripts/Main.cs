@@ -63,16 +63,16 @@ public class Main : MonoBehaviour {
 
         if (awake)
         {
-            payload["action"] = 1.ToString(); //"awake";
+            payload["action"] = "1"; //"awake";
             socket.Emit("/data", payload);
         }
         else if (start)
         {
-            payload["action"] = 2.ToString(); //"start";
+            payload["action"] = "2"; //"start";
             socket.Emit("/data", payload);
         } else if (fixedupdate)
         {
-            payload["action"] = 3.ToString(); //"fixedupdate";
+            payload["action"] = "4"; //"fixedupdate";
             socket.Emit("/data", payload);
         }
         else if (destroy)
@@ -82,7 +82,7 @@ public class Main : MonoBehaviour {
   
             payload["instanceID"] = go.GetInstanceID().ToString();
 
-            payload["action"] = 4.ToString(); //"destroy";
+            payload["action"] = "4"; //"destroy";
             socket.Emit("/data", payload);
         }
    }
@@ -309,8 +309,12 @@ public class Main : MonoBehaviour {
                             if (isLeader)
                             {
                                 // Starting the MagicVerse
-                                socket.Emit("/start_experience", key);
+                                socket.Emit("/start_experience", key + ", " + "{}");
                             } else {
+
+                                // Go Realtime
+                                timeOut = -1.0f;
+
                                 // Rejoining shared experience in progress
                                 engineState = EngineState.SHARING_EXPERIENCE;
                             }
@@ -334,7 +338,7 @@ public class Main : MonoBehaviour {
                             // build the scene, as we respond to incoming /data payloads
                         }
 
-                        // Realtime
+                        // Go Realtime
                         timeOut = -1.0f;
 
                         engineState = EngineState.SHARING_EXPERIENCE;
