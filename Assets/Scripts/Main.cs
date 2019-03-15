@@ -142,7 +142,7 @@ public class Main : MonoBehaviour {
         socket.On("/members_ok", (ev) => {
             Debug.Log("MEMBERS_OK");
             string myString = ev.Data[0].ToObject<string>();
- 
+            memberNames = new List<string>();
             memberNames.AddRange(JsonHelper.getJsonArray<string>(myString));
             Debug.Log("members =" + myString);
 
@@ -155,6 +155,7 @@ public class Main : MonoBehaviour {
         socket.On("/whois_ready_ok", (ev) => {
             Debug.Log("WHOIS_READY_OK");
             string myString = ev.Data[0].ToObject<string>();
+            readyMemberNames = new List<string>();
             readyMemberNames.AddRange(JsonHelper.getJsonArray<string>(myString));
             Debug.Log("ready =" + myString);
 
