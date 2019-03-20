@@ -10,7 +10,7 @@ public class Main : MonoBehaviour {
 
     SocketIO socket = new SocketIO("ws://acpt-barzoom.herokuapp.com:80/socket.io/?EIO=4&transport=websocket");
     float timeSinceLastRequest = 0;
-    string key = "yummy3";  // On one computer, set this to be 'yummy2' and on the other computer set this key to 'yummy3'
+    string key = "yummy2";  // On one computer, set this to be 'yummy2' and on the other computer set this key to 'yummy3'
     string room = "myfunkyroom8";
 
 
@@ -278,16 +278,9 @@ public class Main : MonoBehaviour {
                 case EngineState.INIT: 
                     {
                         Debug.Log("INIT");
-                        
 
-                        if (isLeader)
-                        {
-                            // Initialize, pre Experience, as first joined
-                        }
-                        else
-                        {
-                            // Initialize, pre Experience as 2nd or Nth joined
-                        }
+
+                        // Initialize, pre Experience
 
                         socket.Emit("/player_ready", key);
 
@@ -300,7 +293,11 @@ public class Main : MonoBehaviour {
                         socket.Emit("/members", key);
                         socket.Emit("/whois_ready", key);
 
-                        isLeader = (memberNames.Count == 1);
+                        if (!isLeader)
+                        {
+                            isLeader = ((memberNames.Count == 1);
+                        }
+
                         bool isEveryoneReady = (memberNames.Count == readyMemberNames.Count && memberNames.Count > 1);
 
                         if (isEveryoneReady)  
@@ -327,7 +324,7 @@ public class Main : MonoBehaviour {
                 case EngineState.START_EXPERIENCE:
                     {
                         Debug.Log("START_EXPERIENCE");
-                        if (true)  //isLeader
+                        if (isLeader)  //isLeader
                         {
                             // Initialize the experience, as Leader
                             GameObject go = Instantiate(Resources.Load("SharedCube") as GameObject);
