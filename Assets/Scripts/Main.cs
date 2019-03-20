@@ -13,7 +13,8 @@ public class Main : MonoBehaviour {
     string key = "yummy2";  // On one computer, set this to be 'yummy2' and on the other computer set this key to 'yummy3'
     string room = "myfunkyroom8";
 
-
+    [SerializeField]
+    public GameObject sharedCube;
 
     List<string> memberNames = new List<string>();
     List<string> readyMemberNames = new List<string>();
@@ -328,6 +329,7 @@ public class Main : MonoBehaviour {
                         {
                             // Initialize the experience, as Leader
                             GameObject go = Instantiate(Resources.Load("SharedCube") as GameObject);
+                            go.GetComponent<ActsAsBarzoomable>().enabled = true;
                             go.SetActive(true);
 
                         } else {

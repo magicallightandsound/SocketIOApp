@@ -195,6 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e5857bf73f64471680ae25845ac1aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sharedCube: {fileID: 1238700427745794, guid: f22664884b7624d82a07bbddc955a60c, type: 2}
 --- !u!1001 &796488087
 Prefab:
   m_ObjectHideFlags: 0
