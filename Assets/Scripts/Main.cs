@@ -295,7 +295,7 @@ public class Main : MonoBehaviour {
 
                         if (!isLeader)
                         {
-                            isLeader = ((memberNames.Count == 1);
+                            isLeader = (memberNames.Count == 1);
                         }
 
                         bool isEveryoneReady = (memberNames.Count == readyMemberNames.Count && memberNames.Count > 1);
