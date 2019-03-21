@@ -31,6 +31,10 @@ public class ActsAsBarzoomable : MonoBehaviour
         curPos = transform.GetComponent<Rigidbody>().position;
         lastPos = curPos;
 
+        if (Main.main != null)
+        {
+            Main.main.SyncObject(resourceName, gameObject, false, true);
+        }
     }
 
     // Update is called once per frame
@@ -48,7 +52,7 @@ public class ActsAsBarzoomable : MonoBehaviour
                     lastPos = curPos;
                     if (Main.main != null)
                     {
-                        Main.main.SyncObject(resourceName, gameObject, false, true);
+                        Main.main.SyncObject(resourceName, gameObject, false, false, true);
                     }
                     
                 }
@@ -66,7 +70,7 @@ public class ActsAsBarzoomable : MonoBehaviour
     {
         if (resourceName != null)
         {
-            Main.main.SyncObject(resourceName, gameObject, false, false, true);
+            Main.main.SyncObject(resourceName, gameObject, false, false, false, true);
         }
     }
 }
