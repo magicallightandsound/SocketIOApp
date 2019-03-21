@@ -11,16 +11,17 @@ public class ActsAsBarzoomable : MonoBehaviour
     private float t = 0.0f;
 
     [SerializeField]
-    public string resourceName;
-
-
-
+    public string resourceName = null;
 
     private void Awake()
     {
         if (resourceName != null)
         {
-            Main.main.SyncObject(resourceName, gameObject, true);
+            if (Main.main != null)
+            {
+               Main.main.SyncObject(resourceName, gameObject, true);
+            }
+            
         }
     }
 
@@ -45,7 +46,11 @@ public class ActsAsBarzoomable : MonoBehaviour
                 if (curPos != lastPos)
                 {
                     lastPos = curPos;
-                    Main.main.SyncObject(resourceName, gameObject, false, true);
+                    if (Main.main != null)
+                    {
+                        Main.main.SyncObject(resourceName, gameObject, false, true);
+                    }
+                    
                 }
                 
             }

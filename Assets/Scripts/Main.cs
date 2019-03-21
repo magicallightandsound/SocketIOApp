@@ -6,6 +6,21 @@ using Dpoch.SocketIO;
 using System;
 using Prestige;
 
+
+public class Payload
+{
+    public string resource_name = null;
+    public string pos_x = null;
+    public string pos_y = null;
+    public string pos_z = null;
+    public string rot_w = null;
+    public string rot_x = null;
+    public string rot_y = null;
+    public string rot_z = null;
+    public string action = null;
+    public string instance_id = null;
+}
+
 public class Main : MonoBehaviour {
 
     SocketIO socket = new SocketIO("ws://acpt-barzoom.herokuapp.com:80/socket.io/?EIO=4&transport=websocket");
@@ -13,8 +28,10 @@ public class Main : MonoBehaviour {
     string key = "yummy2";  // On one computer, set this to be 'yummy2' and on the other computer set this key to 'yummy3'
     string room = "myfunkyroom8";
 
+    private GameObject sharedCube;
+
     [SerializeField]
-    public GameObject sharedCube;
+    public GameObject sharedCubePrefab;
 
     List<string> memberNames = new List<string>();
     List<string> readyMemberNames = new List<string>();
@@ -49,49 +66,56 @@ public class Main : MonoBehaviour {
     public void SyncObject(string resourceName, GameObject go, bool awake = false, bool start = false, bool fixedupdate = false, bool destroy = false)
     {
     
-        payload["resource_name"] = resourceName;
         Vector3 position = go.GetComponent<Rigidbody>().transform.position;
         Quaternion rotation = go.GetComponent<Rigidbody>().transform.rotation;
 
-        payload["pos-x"] = position.x.ToString();
-        payload["pos-y"] = position.y.ToString();
-        payload["pos-z"] = position.z.ToString();
 
-        payload["rot-w"] = rotation.w.ToString();
-        payload["rot-x"] = rotation.x.ToString();
-        payload["rot-y"] = rotation.z.ToString();
-        payload["rot-z"] = rotation.z.ToString();
+        var payload = new Payload() {
+            resource_name = resourceName,
+            pos_x = position.x.ToString(),
+            pos_y = position.y.ToString(),
+            pos_z = position.z.ToString(),
+            rot_w = rotation.w.ToString(),
+            rot_x = rotation.x.ToString(),
+            rot_y = rotation.y.ToString(),
+            rot_z = rotation.z.ToString(),
+            instance_id = go.GetInstanceID().ToString(),
+            action = "0"
+        };
 
         if (awake)
         {
-            payload["action"] = "1"; //"awake";
-            socket.Emit("/data", payload);
+            payload.action = "1"; //"awake";
+            socket.Emit("/data", payload.resource_name, payload.pos_x, payload.pos_y, payload.pos_z,
+                payload.rot_w, payload.rot_x, payload.rot_y, payload.rot_z, payload.instance_id, payload.action);
         }
         else if (start)
         {
-            payload["action"] = "2"; //"start";
-            socket.Emit("/data", payload);
+            payload.action = "2"; //"start";
+            socket.Emit("/data", payload.resource_name, payload.pos_x, payload.pos_y, payload.pos_z,
+                payload.rot_w, payload.rot_x, payload.rot_y, payload.rot_z, payload.instance_id, payload.action);
         } else if (fixedupdate)
         {
-            payload["action"] = "4"; //"fixedupdate";
-            socket.Emit("/data", payload);
+            payload.action = "4"; //"fixedupdate";
+            socket.Emit("/data", payload.resource_name, payload.pos_x, payload.pos_y, payload.pos_z,
+                payload.rot_w, payload.rot_x, payload.rot_y, payload.rot_z, payload.instance_id, payload.action);
         }
         else if (destroy)
         {
-            payload.Clear();    
-            payload["resource_name"] = resourceName;
-  
-            payload["instanceID"] = go.GetInstanceID().ToString();
+            var pl = new Payload()
+            {
+                resource_name = resourceName,
+                instance_id = go.GetInstanceID().ToString(),
+                action = "4"
+            };
 
-            payload["action"] = "4"; //"destroy";
-            socket.Emit("/data", payload);
+            socket.Emit("/data", pl);
         }
-   }
+        
+    }
 
     // Use this for initialization
     void Start () {
-
-
 
         Debug.Log("Ready");
 
@@ -190,7 +214,7 @@ public class Main : MonoBehaviour {
             Dictionary<string, string> payload = JsonUtility.FromJson<Dictionary<string,string> >(json);
 
 
-            int remoteInstanceID = Int32.Parse(payload["instanceID"]);
+            int remoteInstanceID = Int32.Parse(payload["instance_id"]);
 
             string action = payload["action"];
             int act = Int32.Parse(action);
@@ -328,9 +352,7 @@ public class Main : MonoBehaviour {
                         if (isLeader)  //isLeader
                         {
                             // Initialize the experience, as Leader
-                            GameObject go = Instantiate(Resources.Load("SharedCube") as GameObject);
-                            go.GetComponent<ActsAsBarzoomable>().enabled = true;
-                            go.SetActive(true);
+                            sharedCube = Instantiate(sharedCubePrefab);
 
                         } else {
                             // We're not the leader, however we will automatically
