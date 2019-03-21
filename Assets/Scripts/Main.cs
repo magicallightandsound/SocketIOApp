@@ -86,19 +86,13 @@ public class Main : MonoBehaviour {
         if (awake)
         {
             payload.action = "1"; //"awake";
-            socket.Emit("/data", key + "," + payload.resource_name + "," + payload.pos_x + "," + payload.pos_y + "," + payload.pos_z + "," +
-                payload.rot_w + "," + payload.rot_x + "," + payload.rot_y + "," + payload.rot_z + "," + payload.instance_id + "," + payload.action);
-        }
+         }
         else if (start)
         {
             payload.action = "2"; //"start";
-            socket.Emit("/data", key + "," + payload.resource_name + "," + payload.pos_x + "," + payload.pos_y + "," + payload.pos_z + "," +
-                payload.rot_w + "," + payload.rot_x + "," + payload.rot_y + "," + payload.rot_z + "," + payload.instance_id + "," + payload.action);
-        } else if (fixedupdate)
+       } else if (fixedupdate)
         {
             payload.action = "3"; //"fixedupdate";
-            socket.Emit("/data", key + "," + payload.resource_name + "," + payload.pos_x + "," + payload.pos_y + "," + payload.pos_z + "," +
-                payload.rot_w + "," + payload.rot_x + "," + payload.rot_y + "," + payload.rot_z + "," + payload.instance_id + "," + payload.action);
         }
         else if (destroy)
         {
@@ -109,9 +103,11 @@ public class Main : MonoBehaviour {
                 action = "4"
             };
 
-            socket.Emit("/data", pl);
+            socket.Emit("/data", key + "," + payload.action + "," + payload.resource_name + "," + payload.instance_id);
+            return;
         }
-        
+        socket.Emit("/data", key + "," + payload.action + "," + payload.resource_name + "," + payload.pos_x + "," + payload.pos_y + "," + payload.pos_z + "," +
+    payload.rot_w + "," + payload.rot_x + "," + payload.rot_y + "," + payload.rot_z + "," + payload.instance_id);
     }
 
     // Use this for initialization
