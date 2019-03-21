@@ -42,7 +42,7 @@ public class ActsAsBarzoomable : MonoBehaviour
     {
 
         t = t + Time.deltaTime;
-        if (t > 1.0f)
+        if (t > 0.016f)
         {
             if (resourceName != null)
             {

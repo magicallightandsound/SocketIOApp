@@ -319,7 +319,7 @@ public class Main : MonoBehaviour {
                             isLeader = (memberNames.Count == 1);
                         }
 
-                        bool isEveryoneReady = (memberNames.Count == readyMemberNames.Count && memberNames.Count == 1);
+                        bool isEveryoneReady = (memberNames.Count == readyMemberNames.Count && memberNames.Count > 1);
 
                         if (isEveryoneReady)  
                         {
