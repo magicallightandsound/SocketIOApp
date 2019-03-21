@@ -25,7 +25,7 @@ public class Main : MonoBehaviour {
 
     SocketIO socket = new SocketIO("ws://acpt-barzoom.herokuapp.com:80/socket.io/?EIO=4&transport=websocket");
     float timeSinceLastRequest = 0;
-    string key = "yummy2";  // On one computer, set this to be 'yummy2' and on the other computer set this key to 'yummy3'
+    string key = "yummy3";  // On one computer, set this to be 'yummy2' and on the other computer set this key to 'yummy3'
     string room = "myfunkyroom8";
 
     private GameObject sharedCube;
@@ -103,11 +103,23 @@ public class Main : MonoBehaviour {
                 action = "4"
             };
 
-            socket.Emit("/data", key + "," + payload.action + "," + payload.resource_name + "," + payload.instance_id);
+            socket.Emit("/data", key + "," + 
+                        payload.action + "," + 
+                        payload.resource_name + "," + 
+                        payload.instance_id);
             return;
         }
-        socket.Emit("/data", key + "," + payload.action + "," + payload.resource_name + "," + payload.pos_x + "," + payload.pos_y + "," + payload.pos_z + "," +
-    payload.rot_w + "," + payload.rot_x + "," + payload.rot_y + "," + payload.rot_z + "," + payload.instance_id);
+        socket.Emit("/data", key + "," + 
+                    payload.action + "," + 
+                    payload.resource_name + "," + 
+                    payload.instance_id + "," + 
+                    payload.pos_x + "," + 
+                    payload.pos_y + "," + 
+                    payload.pos_z + "," +
+                    payload.rot_w + "," + 
+                    payload.rot_x + "," + 
+                    payload.rot_y + "," + 
+                    payload.rot_z );
     }
 
     // Use this for initialization
@@ -207,20 +219,18 @@ public class Main : MonoBehaviour {
 
             string json = ev.Data[0].ToObject<string>();
 
-            Dictionary<string, string> payload = JsonUtility.FromJson<Dictionary<string,string> >(json);
+            string[] paramsArray = json.Split(',');
+            List<string> parameters = new List<string>(paramsArray.Length);
 
-
-            int remoteInstanceID = Int32.Parse(payload["instance_id"]);
-
-            string action = payload["action"];
-            int act = Int32.Parse(action);
-
+            int act = Int32.Parse(parameters[0]);
+            //parametersstring resourceName = parameters[1];
+            int remoteInstanceID = Int32.Parse(parameters[2]);
 
             switch (act)
             {
                 case 1:
                     // Awake
-                    GameObject awakeGo = Prestige.GameObjectFactory.createFromPayload(payload);
+                    GameObject awakeGo = Prestige.GameObjectFactory.createFromPayload(parameters);
                     break;
                 case 2:
                     // Start
@@ -233,13 +243,13 @@ public class Main : MonoBehaviour {
                     GameObject go = Prestige.GameObjectFactory.remoteInstanceID2GameObject[remoteInstanceID];
                     if (go != null)
                     {
-                        Prestige.GameObjectFactory.fixedUpdateOfRemoteInstanceID(remoteInstanceID, payload);
+                        Prestige.GameObjectFactory.fixedUpdateOfRemoteInstanceID(remoteInstanceID, parameters);
                     } else {
 
                         // We have rejoined a Shared Experience, we must initialize the GameObject before
                         // we can update its position/rotation
 
-                        GameObject gogo = Prestige.GameObjectFactory.createFromPayload(payload);
+                        GameObject gogo = Prestige.GameObjectFactory.createFromPayload(parameters);
                         gogo.SetActive(true);
 
                     }
