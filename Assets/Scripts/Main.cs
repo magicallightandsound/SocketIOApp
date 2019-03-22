@@ -19,6 +19,7 @@ public class Payload
     public string rot_z = null;
     public string action = null;
     public string instance_id = null;
+    public string source_instance_id = null;
 }
 
 public class Main : MonoBehaviour {
@@ -38,7 +39,9 @@ public class Main : MonoBehaviour {
 
     bool isLeader = false;
 
-    Dictionary<string, string> payload = new Dictionary<string, string>();
+
+    // GameObjects created because we are the leader, are referenced here
+    Dictionary<int, GameObject> localInstanceID2GameObject = new Dictionary<int, GameObject>();
 
     float timeOut = 2.0f;
 
@@ -69,7 +72,7 @@ public class Main : MonoBehaviour {
     
         Vector3 position = go.GetComponent<Rigidbody>().transform.position;
         Quaternion rotation = go.GetComponent<Rigidbody>().transform.rotation;
-
+        int instanceID = go.GetInstanceID();
 
         var payload = new Payload() {
             resource_name = resourceName,
@@ -80,12 +83,17 @@ public class Main : MonoBehaviour {
             rot_x = rotation.x.ToString(),
             rot_y = rotation.y.ToString(),
             rot_z = rotation.z.ToString(),
-            instance_id = go.GetInstanceID().ToString(),
+            instance_id = instanceID.ToString(),
             action = "0"
         };
 
         if (awake)
         {
+            /// 
+            /// A local GameObject has just awoken, set the source_instance_id 
+            ///
+            localInstanceID2GameObject[instanceID] = go;
+            payload.source_instance_id = instanceID.ToString();
             payload.action = "1"; //"awake";
          }
         else if (start)
@@ -93,6 +101,18 @@ public class Main : MonoBehaviour {
             payload.action = "2"; //"start";
        } else if (fixedupdate)
         {
+            
+
+            if (localInstanceID2GameObject.ContainsKey(instanceID))
+            {
+                // we are the originator
+                payload.source_instance_id = instanceID.ToString();
+            }
+
+            if (Prestige.GameObjectFactory.remoteInstanceID2GameObject.ContainsKey(instanceID))
+            {
+                payload.source_instance_id = instanceID.ToString();
+            }
             payload.action = "3"; //"fixedupdate";
         }
         else if (destroy)
@@ -116,7 +136,8 @@ public class Main : MonoBehaviour {
         socket.Emit("/data", key + "," + 
                     payload.action + "," + 
                     payload.resource_name + "," + 
-                    payload.instance_id + "," + 
+                    payload.instance_id + "," +
+                    payload.source_instance_id + "," +
                     payload.pos_x + "," + 
                     payload.pos_y + "," + 
                     payload.pos_z + "," +
@@ -256,6 +277,7 @@ public class Main : MonoBehaviour {
 
             //parametersstring resourceName = parameters[1];
             int remoteInstanceID = Int32.Parse(parameters[2]);
+            int sourceInstanceID = Int32.Parse(parameters[3]);
 
             switch (act)
             {
@@ -271,10 +293,25 @@ public class Main : MonoBehaviour {
                     break;
                 case 3:
                     // Fixed Update
-                    GameObject go = Prestige.GameObjectFactory.remoteInstanceID2GameObject[remoteInstanceID];
-                    if (go != null)
+
+                    if (Prestige.GameObjectFactory.remoteInstanceID2GameObject.ContainsKey(remoteInstanceID))
                     {
                         Prestige.GameObjectFactory.fixedUpdateOfRemoteInstanceID(remoteInstanceID, parameters);
+                    }
+                    else if (localInstanceID2GameObject.ContainsKey(sourceInstanceID))
+                    {
+                        Vector3 position = new Vector3(float.Parse(parameters[4]),
+                                           float.Parse(parameters[5]),
+                                           float.Parse(parameters[6]));
+                        Quaternion quaternion = new Quaternion(float.Parse(parameters[7]),
+                                                               float.Parse(parameters[8]),
+                                                               float.Parse(parameters[9]),
+                                                               float.Parse(parameters[10]));
+
+                        GameObject go = localInstanceID2GameObject[sourceInstanceID] as GameObject;
+                        go.GetComponent<Transform>().position = position;
+                        go.GetComponent<Transform>().rotation = quaternion;
+                        
                     } else {
 
                         // We have rejoined a Shared Experience, we must initialize the GameObject before
