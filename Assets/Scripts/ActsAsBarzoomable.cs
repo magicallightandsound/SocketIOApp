@@ -13,11 +13,14 @@ public class ActsAsBarzoomable : MonoBehaviour
     [SerializeField]
     public string resourceName = null;
 
+    [SerializeField]
+    public bool reflect = false;
+
     private void Awake()
     {
         if (resourceName != null)
         {
-            if (Main.main != null)
+            if (Main.main != null && reflect)
             {
                Main.main.SyncObject(resourceName, gameObject, true);
             }
@@ -31,7 +34,7 @@ public class ActsAsBarzoomable : MonoBehaviour
         curPos = transform.GetComponent<Rigidbody>().position;
         lastPos = curPos;
 
-        if (Main.main != null)
+        if (Main.main != null && reflect)
         {
             Main.main.SyncObject(resourceName, gameObject, false, true);
         }
@@ -68,7 +71,7 @@ public class ActsAsBarzoomable : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (resourceName != null)
+        if (resourceName != null && reflect)
         {
             Main.main.SyncObject(resourceName, gameObject, false, false, false, true);
         }
