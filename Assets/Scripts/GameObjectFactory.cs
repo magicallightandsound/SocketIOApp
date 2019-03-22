@@ -12,6 +12,8 @@ namespace Prestige
 
         public static GameObject createFromPayload(List<string> payload) {
 
+            Debug.Log("GameObject createFromPayload(List<string> payload");
+
               
             //  payload.action              0
             //  payload.resource_name       1
@@ -39,12 +41,15 @@ namespace Prestige
         }
 
         public static GameObject createFromRemoteInstanceID(int remoteInstanceID){
+
+            Debug.Log("GameObject createFromRemoteInstanceID(int remoteInstanceID)");
             GameObject go = remoteInstanceID2GameObject[remoteInstanceID] as GameObject;
             return go;
         }
 
         public static GameObject fixedUpdateOfRemoteInstanceID(int remoteInstanceID, List<string> payload)
         {
+            Debug.Log("GameObject fixedUpdateOfRemoteInstanceID(int remoteInstanceID, List<string> payload)");
             Vector3 position = new Vector3(float.Parse(payload[3]),
                                            float.Parse(payload[4]),
                                            float.Parse(payload[5]));

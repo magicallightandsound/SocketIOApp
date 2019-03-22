@@ -25,7 +25,7 @@ public class Main : MonoBehaviour {
 
     SocketIO socket = new SocketIO("ws://acpt-barzoom.herokuapp.com:80/socket.io/?EIO=4&transport=websocket");
     float timeSinceLastRequest = 0;
-    string key = "yummy3";  // On one computer, set this to be 'yummy2' and on the other computer set this key to 'yummy3'
+    string key = "yummy2";  // On one computer, set this to be 'yummy2' and on the other computer set this key to 'yummy3'
     string room = "myfunkyroom8";
 
     private GameObject sharedCube;
@@ -104,9 +104,12 @@ public class Main : MonoBehaviour {
             };
 
             socket.Emit("/data", key + "," + 
-                        payload.action + "," + 
-                        payload.resource_name + "," + 
-                        payload.instance_id);
+                        pl.action + "," + 
+                        pl.resource_name + "," + 
+                        pl.instance_id);
+            return;
+        } else {
+            Debug.Log("Unknown action!?");
             return;
         }
         socket.Emit("/data", key + "," + 
@@ -220,7 +223,7 @@ public class Main : MonoBehaviour {
             string json = ev.Data[0].ToObject<string>();
 
             string[] paramsArray = json.Split(',');
-            List<string> parameters = new List<string>(paramsArray.Length);
+            List<string> parameters = new List<string>(paramsArray);
 
             int act = Int32.Parse(parameters[0]);
             //parametersstring resourceName = parameters[1];
