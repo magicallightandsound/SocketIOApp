@@ -92,12 +92,18 @@ public class Main : MonoBehaviour {
             /// 
             /// A local GameObject has just awoken, set the source_instance_id 
             ///
+            Debug.Log("A local GameObject has just awoken, set the source_instance_id=" + instanceID );
             localInstanceID2GameObject[instanceID] = go;
             payload.source_instance_id = instanceID.ToString();
             payload.action = "1"; //"awake";
          }
         else if (start)
         {
+            /// 
+            /// A local GameObject has just started, set the source_instance_id 
+            ///
+            Debug.Log("A local GameObject has just started, set the source_instance_id=" + instanceID);
+            payload.source_instance_id = instanceID.ToString();
             payload.action = "2"; //"start";
        } else if (fixedupdate)
         {
@@ -105,13 +111,15 @@ public class Main : MonoBehaviour {
 
             if (localInstanceID2GameObject.ContainsKey(instanceID))
             {
-                // we are the originator
+                Debug.Log("A local GameObject has just moved, set the source_instance_id=" + instanceID);
                 payload.source_instance_id = instanceID.ToString();
             }
 
-            if (Prestige.GameObjectFactory.remoteInstanceID2GameObject.ContainsKey(instanceID))
+            if (Prestige.GameObjectFactory.localInstanceID2SourceInstanceID.ContainsKey(instanceID))
             {
-                payload.source_instance_id = instanceID.ToString();
+                int sourceInstanceID = Prestige.GameObjectFactory.localInstanceID2SourceInstanceID[instanceID];
+                Debug.Log("A remote GameObject has just moved, set the source_instance_id=" + sourceInstanceID);
+                payload.source_instance_id = sourceInstanceID.ToString();
             }
             payload.action = "3"; //"fixedupdate";
         }
@@ -206,11 +214,11 @@ public class Main : MonoBehaviour {
         });
 
         socket.On("/members_ok", (ev) => {
-            Debug.Log("MEMBERS_OK");
+            //Debug.Log("MEMBERS_OK");
             string myString = ev.Data[0].ToObject<string>();
             memberNames = new List<string>();
             memberNames.AddRange(JsonHelper.getJsonArray<string>(myString));
-            Debug.Log("members =" + myString);
+            //Debug.Log("members =" + myString);
 
             if (engineState == EngineState.JOIN)
             {
@@ -279,27 +287,31 @@ public class Main : MonoBehaviour {
             int remoteInstanceID = Int32.Parse(parameters[2]);
             int sourceInstanceID = Int32.Parse(parameters[3]);
 
+
             switch (act)
             {
                 case 1:
                     // Awake
+                    Debug.Log("AWAKENING: remoteID=" + remoteInstanceID + " sourceID=" + sourceInstanceID);
                     GameObject awakeGo = Prestige.GameObjectFactory.createFromPayload(parameters);
                     break;
                 case 2:
                     // Start
-
+                    Debug.Log("STARTING: remoteID=" + remoteInstanceID + " sourceID=" + sourceInstanceID);
                     GameObject startGo = Prestige.GameObjectFactory.createFromRemoteInstanceID(remoteInstanceID);
                     startGo.SetActive(true);
                     break;
                 case 3:
                     // Fixed Update
-
+                    Debug.Log("FIXEDUPDATE ATTEMPT: remoteID=" + remoteInstanceID + " sourceID=" + sourceInstanceID);
                     if (Prestige.GameObjectFactory.remoteInstanceID2GameObject.ContainsKey(remoteInstanceID))
                     {
+                        Debug.Log("FIXEDUPDATE SUCCESS REMOTE INSTANCE : remoteID=" + remoteInstanceID + " sourceID=" + sourceInstanceID);
                         Prestige.GameObjectFactory.fixedUpdateOfRemoteInstanceID(remoteInstanceID, parameters);
                     }
                     else if (localInstanceID2GameObject.ContainsKey(sourceInstanceID))
                     {
+                        Debug.Log("FIXEDUPDATE SUCCESS OWNED INSTANCE: remoteID=" + remoteInstanceID + " sourceID=" + sourceInstanceID);
                         Vector3 position = new Vector3(float.Parse(parameters[4]),
                                            float.Parse(parameters[5]),
                                            float.Parse(parameters[6]));
@@ -312,19 +324,11 @@ public class Main : MonoBehaviour {
                         go.GetComponent<Transform>().position = position;
                         go.GetComponent<Transform>().rotation = quaternion;
                         
-                    } else {
-
-                        // We have rejoined a Shared Experience, we must initialize the GameObject before
-                        // we can update its position/rotation
-
-                        GameObject gogo = Prestige.GameObjectFactory.createFromPayload(parameters);
-                        gogo.SetActive(true);
-
-                    }
+                    }  
                     break;
                 case 4:
                     // Destroy
-                 
+                    Debug.Log("DESTROY: remoteID=" + remoteInstanceID + " sourceID=" + sourceInstanceID);
                     Prestige.GameObjectFactory.DestroyGameObjectWithRemoteInstanceID(remoteInstanceID);
                     break;
                 default:
@@ -457,7 +461,7 @@ public class Main : MonoBehaviour {
                             isLeader = (memberNames.Count == 1);
                         }
 
-                        Debug.Log("SHARING_EXPERIENCE");
+                        //Debug.Log("SHARING_EXPERIENCE");
                     }
                     break;
                 case EngineState.END_EXPERIENCE:

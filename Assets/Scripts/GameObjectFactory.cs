@@ -9,6 +9,7 @@ namespace Prestige
     {
 
         public static Dictionary<int, GameObject> remoteInstanceID2GameObject = new Dictionary<int, GameObject>();
+        public static Dictionary<int, int> localInstanceID2SourceInstanceID = new Dictionary<int, int>();
 
         public static GameObject createFromPayload(List<string> payload) {
 
@@ -38,6 +39,9 @@ namespace Prestige
 
             int remoteInstanceID = Int32.Parse(payload[2]);
             remoteInstanceID2GameObject[remoteInstanceID] = go;
+
+            int sourceInstanceID = Int32.Parse(payload[3]);
+            localInstanceID2SourceInstanceID[go.GetInstanceID()] = sourceInstanceID;
             return go;
         }
 
