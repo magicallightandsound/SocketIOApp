@@ -222,10 +222,29 @@ public class Main : MonoBehaviour {
 
             string json = ev.Data[0].ToObject<string>();
 
+
+            // Ignore the empty dictionary that the Server sends back in response to a /data sent by the Client
+            if (json == "{}")
+            {
+                return;
+            }
+
+
             string[] paramsArray = json.Split(',');
             List<string> parameters = new List<string>(paramsArray);
 
-            int act = Int32.Parse(parameters[0]);
+            int act = 0;
+            try
+            {
+                act = Int32.Parse(parameters[0]);
+            }
+            catch (FormatException e)
+            {
+                Debug.Log("Unable to parse action." + e + " - Skipping /data frame: " + json);
+                return;
+            }
+
+
             //parametersstring resourceName = parameters[1];
             int remoteInstanceID = Int32.Parse(parameters[2]);
 
