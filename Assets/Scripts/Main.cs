@@ -18,8 +18,8 @@ public class Payload
     public string rot_y = null;
     public string rot_z = null;
     public string action = null;
-    public string instance_id = null;
-    public string source_instance_id = null;
+    public string instance_id = "0";
+    public string source_instance_id = "0";
 }
 
 public class Main : MonoBehaviour {
