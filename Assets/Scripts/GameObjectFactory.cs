@@ -32,10 +32,7 @@ namespace Prestige
                                                     new Vector3(float.Parse(payload[4]),
                                                                 float.Parse(payload[5]),
                                                                 float.Parse(payload[6])), 
-                                                                new Quaternion(float.Parse(payload[7]),
-                                                                               float.Parse(payload[8]),
-                                                                               float.Parse(payload[9]),
-                                                                               float.Parse(payload[10]))) as GameObject;
+                                                           Quaternion.identity) as GameObject;
 
             int remoteInstanceID = Int32.Parse(payload[2]);
             remoteInstanceID2GameObject[remoteInstanceID] = go;
