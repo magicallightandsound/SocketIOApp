@@ -321,8 +321,8 @@ public class Main : MonoBehaviour {
                                                                float.Parse(parameters[10]));
 
                         GameObject go = localInstanceID2GameObject[sourceInstanceID] as GameObject;
-                        go.GetComponent<Rigidbody>().position = position;
-                        go.GetComponent<Rigidbody>().rotation = quaternion;
+                        go.GetComponent<Transform>().position = position;
+                        go.GetComponent<Transform>().rotation = quaternion;
                         
                     }  
                     break;
