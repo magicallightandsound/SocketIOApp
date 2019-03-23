@@ -8,6 +8,9 @@ public class ActsAsBarzoomable : MonoBehaviour
 
     private Vector3 curPos;
     private Vector3 lastPos;
+    private Quaternion currentRotation;
+    private Quaternion lastRotation;
+
     private float t = 0.0f;
 
     [SerializeField]
@@ -31,8 +34,11 @@ public class ActsAsBarzoomable : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        curPos = GetComponent<Rigidbody>().position;
+        curPos = GetComponent<Transform>().position;
         lastPos = curPos;
+
+        currentRotation = GetComponent<Transform>().rotation;
+        lastRotation = currentRotation;
 
         if (Main.main != null && reflect)
         {
@@ -41,7 +47,7 @@ public class ActsAsBarzoomable : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
 
         t = t + Time.deltaTime;
@@ -49,7 +55,7 @@ public class ActsAsBarzoomable : MonoBehaviour
         {
             if (resourceName != null)
             {
-                curPos = GetComponent<Rigidbody>().position;
+                curPos = GetComponent<Transform>().position;
                 if (curPos != lastPos)
                 {
                     lastPos = curPos;
@@ -59,7 +65,18 @@ public class ActsAsBarzoomable : MonoBehaviour
                     }
                     
                 }
+                if (currentRotation != lastRotation)
+                {
+
+                    lastRotation = currentRotation;
+
+                    if (Main.main != null)
+                    {
+                        Main.main.SyncObject(resourceName, gameObject, false, false, true);
+                    }
                 
+                }
+
             }
 
             t = 0.0f;
