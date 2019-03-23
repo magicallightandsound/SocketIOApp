@@ -329,6 +329,11 @@ public class Main : MonoBehaviour {
                         actsAsBarzoomable.reflectUpdate = false;
 
                         
+                    } else {
+                        // Entered an already running Shared Experience, just instantiate the game object that is
+                        // currently in play.
+                        GameObject gameObject = Prestige.GameObjectFactory.createFromPayload(parameters);
+                        gameObject.SetActive(true);
                     }  
                     break;
                 case 4:
