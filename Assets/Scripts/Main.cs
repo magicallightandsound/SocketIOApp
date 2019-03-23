@@ -315,14 +315,19 @@ public class Main : MonoBehaviour {
                         Vector3 position = new Vector3(float.Parse(parameters[4]),
                                            float.Parse(parameters[5]),
                                            float.Parse(parameters[6]));
-                        Quaternion quaternion = new Quaternion(float.Parse(parameters[7]),
-                                                               float.Parse(parameters[8]),
-                                                               float.Parse(parameters[9]),
-                                                               float.Parse(parameters[10]));
+                        Quaternion quaternion = Quaternion.Euler(float.Parse(parameters[8]),
+                                                                 float.Parse(parameters[9]),
+                                                                 float.Parse(parameters[10]));
 
                         GameObject go = localInstanceID2GameObject[sourceInstanceID] as GameObject;
-                        go.GetComponent<Transform>().position = position;
-                        go.GetComponent<Transform>().rotation = quaternion;
+
+
+                        ///  ActsAsBarzoomable will update the position and rotation on the next update cycle.
+                        ActsAsBarzoomable actsAsBarzoomable = go.GetComponent<ActsAsBarzoomable>();
+                        actsAsBarzoomable.upcomingPosition = position;
+                        actsAsBarzoomable.upcomingRotation = quaternion;
+                        actsAsBarzoomable.reflectUpdate = false;
+
                         
                     }  
                     break;

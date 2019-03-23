@@ -55,14 +55,18 @@ namespace Prestige
             Vector3 position = new Vector3(float.Parse(payload[4]),
                                            float.Parse(payload[5]),
                                            float.Parse(payload[6]));
-            Quaternion quaternion = new Quaternion(float.Parse(payload[7]),
-                                                   float.Parse(payload[8]),
-                                                   float.Parse(payload[9]),
-                                                   float.Parse(payload[10]));
+            Quaternion quaternion = Quaternion.Euler(float.Parse(payload[8]),
+                                                     float.Parse(payload[9]),
+                                                     float.Parse(payload[10]));
 
             GameObject go = remoteInstanceID2GameObject[remoteInstanceID] as GameObject;
-            go.GetComponent<Transform>().position = position;
-            go.GetComponent<Transform>().rotation = quaternion;
+
+            ///  ActsAsBarzoomable will update the position and rotation on the next update cycle.
+            ActsAsBarzoomable actsAsBarzoomable = go.GetComponent<ActsAsBarzoomable>();
+            actsAsBarzoomable.upcomingPosition = position;
+            actsAsBarzoomable.upcomingRotation = quaternion;
+            actsAsBarzoomable.reflectUpdate = false;
+
             return go;
         }
 

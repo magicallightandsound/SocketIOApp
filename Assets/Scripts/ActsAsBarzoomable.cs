@@ -19,6 +19,10 @@ public class ActsAsBarzoomable : MonoBehaviour
     [SerializeField]
     public bool reflect = false;
 
+    public bool reflectUpdate = true;
+    public Vector3 upcomingPosition;
+    public Quaternion upcomingRotation;
+
     private void Awake()
     {
         if (resourceName != null)
@@ -53,13 +57,20 @@ public class ActsAsBarzoomable : MonoBehaviour
         t = t + Time.deltaTime;
         if (t > 0.016f)
         {
+            /// Update position, rotation without reflecting
+            if (reflectUpdate == false)
+            {
+                GetComponent<Transform>().position = upcomingPosition;
+                GetComponent<Transform>().rotation = upcomingRotation;
+            }
+
             if (resourceName != null)
             {
                 curPos = GetComponent<Transform>().position;
                 if (curPos != lastPos)
                 {
                     lastPos = curPos;
-                    if (Main.main != null)
+                    if (Main.main != null && reflectUpdate)
                     {
                         Main.main.SyncObject(resourceName, gameObject, false, false, true);
                     }
@@ -70,13 +81,16 @@ public class ActsAsBarzoomable : MonoBehaviour
 
                     lastRotation = currentRotation;
 
-                    if (Main.main != null)
+                    if (Main.main != null && reflectUpdate)
                     {
                         Main.main.SyncObject(resourceName, gameObject, false, false, true);
                     }
                 
                 }
-
+                if (!reflectUpdate)
+                {
+                    reflectUpdate = true;
+                }
             }
 
             t = 0.0f;
