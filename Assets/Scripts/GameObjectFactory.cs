@@ -64,8 +64,8 @@ namespace Prestige
                                                    float.Parse(payload[10]));
 
             GameObject go = remoteInstanceID2GameObject[remoteInstanceID] as GameObject;
-            go.GetComponent<Transform>().position = position;
-            go.GetComponent<Transform>().rotation = quaternion;
+            go.GetComponent<Rigidbody>().position = position;
+            go.GetComponent<Rigidbody>().rotation = quaternion;
             return go;
         }
 

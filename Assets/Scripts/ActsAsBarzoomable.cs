@@ -31,7 +31,7 @@ public class ActsAsBarzoomable : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        curPos = transform.GetComponent<Rigidbody>().position;
+        curPos = GetComponent<Rigidbody>().position;
         lastPos = curPos;
 
         if (Main.main != null && reflect)
@@ -49,7 +49,7 @@ public class ActsAsBarzoomable : MonoBehaviour
         {
             if (resourceName != null)
             {
-                curPos = transform.GetComponent<Rigidbody>().position;
+                curPos = GetComponent<Rigidbody>().position;
                 if (curPos != lastPos)
                 {
                     lastPos = curPos;
