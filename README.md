@@ -22,6 +22,7 @@ Instructions (for two workstations, but you can test on more than two):
 
 Bug reports are welcome, send to rdegraci@gmail.com
 
+Roadmap can be found at: https://www.pivotaltracker.com/n/projects/2321432
 
 Requirements:
 - Two or more workstations 
