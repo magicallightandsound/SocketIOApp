@@ -93,8 +93,6 @@ public class InputController : MonoBehaviour
         {
             MLInputController mlInputController = inputController.GetMLInputController();
 
-            Assert.IsTrue(mlInputController != null);
-
             if (mlInputController != null)
             {
                 transform.position = mlInputController.Position;
