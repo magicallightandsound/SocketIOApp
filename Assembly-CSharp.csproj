@@ -142,8 +142,8 @@
     <Compile Include="Assets\Scripts\ActsAsBarzoomable.cs" />
     <Compile Include="Assets\Scripts\Cursor.cs" />
     <Compile Include="Assets\Scripts\InputController.cs" />
-    <Compile Include="Assets\Scripts\Main.cs" />
     <Compile Include="Assets\Scripts\Meshing.cs" />
+    <Compile Include="Assets\Scripts\OrcusClient.cs" />
     <Compile Include="Assets\Scripts\Packet.cs" />
     <Compile Include="Assets\Scripts\Placeable.cs" />
     <Compile Include="Assets\Scripts\Prestige.cs" />
