@@ -105,21 +105,24 @@ namespace Prestige
         {
             if (!MLInput.IsStarted)
             {
+                if (MagicLeapDevice.IsReady())
+                {
+                    MLResult result = MLInput.Start(inputConfiguration);
+                    if (result.IsOk == true)
+                    {
+                        MLInput.OnControllerConnected += HandleOnControllerConnected;
+                        MLInput.OnControllerDisconnected += HandleOnControllerDisconnected;
 
-                MLResult result = MLInput.Start(inputConfiguration);
-                Assert.IsTrue(result.IsOk);
+                        MLInputController leftController = MLInput.GetController(MLInput.Hand.Left);
+                        AddInputController(leftController);
 
-                MLInput.OnControllerConnected += HandleOnControllerConnected;
-                MLInput.OnControllerDisconnected += HandleOnControllerDisconnected;
+                        MLInputController rightController = MLInput.GetController(MLInput.Hand.Right);
+                        AddInputController(rightController);
 
-                MLInputController leftController = MLInput.GetController(MLInput.Hand.Left);
-                AddInputController(leftController);
-
-                MLInputController rightController = MLInput.GetController(MLInput.Hand.Right);
-                AddInputController(rightController);
-
-                MLInputController mobileController = MLInput.GetController(0);  // Mobile
-                AddInputController(mobileController);
+                        MLInputController mobileController = MLInput.GetController(0);  // Mobile
+                        AddInputController(mobileController);
+                    }
+                }
 
             }
 
@@ -405,9 +408,13 @@ namespace Prestige
 
         virtual public void Start(WorldRaysCallback worldRaysCallback)
         {
-            MLResult result = MLWorldRays.Start();
+            if (MagicLeapDevice.IsReady())
+            {
+                MLResult result = MLWorldRays.Start();
 
-            this.worldRaysCallback = worldRaysCallback;
+                this.worldRaysCallback = worldRaysCallback;
+            }
+
         }
 
         virtual public void Update(Vector3 position, Vector3 direction, Vector3 up)

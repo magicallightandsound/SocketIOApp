@@ -10,26 +10,30 @@ public class ActsAsBarzoomable : MonoBehaviour
     private Vector3 lastPos;
     private Quaternion currentRotation;
     private Quaternion lastRotation;
-
     private float t = 0.0f;
+    private bool allowReflectionUpdate = true;
+    private Vector3 scheduledNewPosition;
+    private Quaternion scheduledNewRotation;
 
     [SerializeField]
     public string resourceName = null;
 
     [SerializeField]
-    public bool reflect = false;
+    public bool allowInternalStateReflection = false;
 
-    public bool reflectUpdate = true;
-    public Vector3 upcomingPosition;
-    public Quaternion upcomingRotation;
-
+    public void scheduleReflectionUpdate(Vector3 position, Quaternion rotation)
+    {
+        scheduledNewPosition = position;
+        scheduledNewRotation = rotation;
+        allowReflectionUpdate = false;
+    }
     private void Awake()
     {
         if (resourceName != null)
         {
-            if (Main.main != null && reflect)
+            if (OrcusClient.client != null && allowInternalStateReflection)
             {
-               Main.main.SyncObject(resourceName, gameObject, true);
+               OrcusClient.client.SyncGameObject(resourceName, gameObject, true);
             }
             
         }
@@ -44,9 +48,9 @@ public class ActsAsBarzoomable : MonoBehaviour
         currentRotation = GetComponent<Transform>().rotation;
         lastRotation = currentRotation;
 
-        if (Main.main != null && reflect)
+        if (OrcusClient.client != null && allowInternalStateReflection)
         {
-            Main.main.SyncObject(resourceName, gameObject, false, true);
+            OrcusClient.client.SyncGameObject(resourceName, gameObject, false, true);
         }
     }
 
@@ -58,10 +62,10 @@ public class ActsAsBarzoomable : MonoBehaviour
         if (t > 0.016f)
         {
             /// Update position, rotation without reflecting
-            if (reflectUpdate == false)
+            if (allowReflectionUpdate == false)
             {
-                GetComponent<Transform>().position = upcomingPosition;
-                GetComponent<Transform>().rotation = upcomingRotation;
+                GetComponent<Transform>().position = scheduledNewPosition;
+                GetComponent<Transform>().rotation = scheduledNewRotation;
             }
 
             if (resourceName != null)
@@ -70,9 +74,9 @@ public class ActsAsBarzoomable : MonoBehaviour
                 if (curPos != lastPos)
                 {
                     lastPos = curPos;
-                    if (Main.main != null && reflectUpdate)
+                    if (OrcusClient.client != null && allowReflectionUpdate)
                     {
-                        Main.main.SyncObject(resourceName, gameObject, false, false, true);
+                        OrcusClient.client.SyncGameObject(resourceName, gameObject, false, false, true);
                     }
                     
                 }
@@ -81,15 +85,15 @@ public class ActsAsBarzoomable : MonoBehaviour
 
                     lastRotation = currentRotation;
 
-                    if (Main.main != null && reflectUpdate)
+                    if (OrcusClient.client != null && allowReflectionUpdate)
                     {
-                        Main.main.SyncObject(resourceName, gameObject, false, false, true);
+                        OrcusClient.client.SyncGameObject(resourceName, gameObject, false, false, true);
                     }
                 
                 }
-                if (!reflectUpdate)
+                if (!allowReflectionUpdate)
                 {
-                    reflectUpdate = true;
+                    allowReflectionUpdate = true;
                 }
             }
 
@@ -102,9 +106,9 @@ public class ActsAsBarzoomable : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (resourceName != null && reflect)
+        if (resourceName != null && allowInternalStateReflection)
         {
-            Main.main.SyncObject(resourceName, gameObject, false, false, false, true);
+            OrcusClient.client.SyncGameObject(resourceName, gameObject, false, false, false, true);
         }
     }
 }
