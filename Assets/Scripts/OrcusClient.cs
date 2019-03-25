@@ -110,7 +110,7 @@ public class OrcusClient : MonoBehaviour {
             rot_y = rotation.y.ToString(),
             rot_z = rotation.z.ToString(),
             instance_id = instanceID.ToString(),
-            action = OrcusPayloadState.NOP.ToString()
+            action = "0"    // NOP
         };
 
         if (awaken)
@@ -121,7 +121,7 @@ public class OrcusClient : MonoBehaviour {
             Debug.Log("A local GameObject has just awoken, set the source_instance_id=" + instanceID );
             localInstanceID2GameObject[instanceID] = gameObject;
             payload.source_instance_id = instanceID.ToString();
-            payload.action = OrcusPayloadState.AWAKEN.ToString();  
+            payload.action = "1";   // Awaken  
          }
         else if (start)
         {
@@ -130,7 +130,7 @@ public class OrcusClient : MonoBehaviour {
             ///
             Debug.Log("A local GameObject has just started, set the source_instance_id=" + instanceID);
             payload.source_instance_id = instanceID.ToString();
-            payload.action = OrcusPayloadState.START.ToString();
+            payload.action = "2";   // Start
        } else if (update)
         {
             
@@ -147,7 +147,7 @@ public class OrcusClient : MonoBehaviour {
                 Debug.Log("A remote GameObject has just moved, set the source_instance_id=" + sourceInstanceID);
                 payload.source_instance_id = sourceInstanceID.ToString();
             }
-            payload.action = OrcusPayloadState.UPDATE.ToString();
+            payload.action = "3";   // Update
         }
         else if (destruct)
         {
@@ -155,7 +155,7 @@ public class OrcusClient : MonoBehaviour {
             {
                 resource_name = resourceName,
                 instance_id = gameObject.GetInstanceID().ToString(),
-                action = OrcusPayloadState.DESTRUCT.ToString()
+                action = "4"   // Destruct
             };
 
             if (localInstanceID2GameObject.ContainsKey(instanceID))
