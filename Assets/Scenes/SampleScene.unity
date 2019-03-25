@@ -170,7 +170,7 @@ GameObject:
   - component: {fileID: 614337108}
   - component: {fileID: 614337109}
   m_Layer: 0
-  m_Name: main
+  m_Name: OrcusClient
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

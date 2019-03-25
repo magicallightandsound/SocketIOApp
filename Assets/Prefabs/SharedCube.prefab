@@ -139,4 +139,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resourceName: SharedCube
-  reflect: 1
+  allowInternalStateReflection: 1
