@@ -31,9 +31,9 @@ public class ActsAsBarzoomable : MonoBehaviour
     {
         if (resourceName != null)
         {
-            if (OrcusClient.client != null && allowInternalStateReflection)
+            if (BarzoomClient.client != null && allowInternalStateReflection)
             {
-               OrcusClient.client.SyncGameObject(resourceName, gameObject, true);
+               BarzoomClient.client.SyncGameObject(resourceName, gameObject, true);
             }
             
         }
@@ -48,9 +48,9 @@ public class ActsAsBarzoomable : MonoBehaviour
         currentRotation = GetComponent<Transform>().rotation;
         lastRotation = currentRotation;
 
-        if (OrcusClient.client != null && allowInternalStateReflection)
+        if (BarzoomClient.client != null && allowInternalStateReflection)
         {
-            OrcusClient.client.SyncGameObject(resourceName, gameObject, false, true);
+            BarzoomClient.client.SyncGameObject(resourceName, gameObject, false, true);
         }
     }
 
@@ -74,9 +74,9 @@ public class ActsAsBarzoomable : MonoBehaviour
                 if (curPos != lastPos)
                 {
                     lastPos = curPos;
-                    if (OrcusClient.client != null && allowReflectionUpdate)
+                    if (BarzoomClient.client != null && allowReflectionUpdate)
                     {
-                        OrcusClient.client.SyncGameObject(resourceName, gameObject, false, false, true);
+                        BarzoomClient.client.SyncGameObject(resourceName, gameObject, false, false, true);
                     }
                     
                 }
@@ -85,9 +85,9 @@ public class ActsAsBarzoomable : MonoBehaviour
 
                     lastRotation = currentRotation;
 
-                    if (OrcusClient.client != null && allowReflectionUpdate)
+                    if (BarzoomClient.client != null && allowReflectionUpdate)
                     {
-                        OrcusClient.client.SyncGameObject(resourceName, gameObject, false, false, true);
+                        BarzoomClient.client.SyncGameObject(resourceName, gameObject, false, false, true);
                     }
                 
                 }
@@ -108,7 +108,7 @@ public class ActsAsBarzoomable : MonoBehaviour
     {
         if (resourceName != null && allowInternalStateReflection)
         {
-            OrcusClient.client.SyncGameObject(resourceName, gameObject, false, false, false, true);
+            BarzoomClient.client.SyncGameObject(resourceName, gameObject, false, false, false, true);
         }
     }
 }

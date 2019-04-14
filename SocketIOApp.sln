@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketIOApp", "Assembly-CSharp.csproj", "{8801308D-86AC-518B-FCE2-7E4458D3F297}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{8801308D-86AC-518B-FCE2-7E4458D3F297}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketIOApp", "Assembly-CSharp-Editor.csproj", "{DBF6AAED-5A7D-B974-45D2-443B1A2B82C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{DBF6AAED-5A7D-B974-45D2-443B1A2B82C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

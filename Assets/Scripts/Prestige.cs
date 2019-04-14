@@ -300,44 +300,44 @@ namespace Prestige
         }
 
 
-        public void RegisterTouchpadGestureStartHandler(System.Action<byte, MLInputControllerTouchpadGesture> callback)
+        public void RegisterTouchpadGestureStartHandler(MLInput.ControllerTouchpadGestureDelegate callback)
         {
             MLInput.OnControllerTouchpadGestureStart += callback;
         }
 
-        public void RegisterTouchpadGestureEndHandler(System.Action<byte, MLInputControllerTouchpadGesture> callback)
+        public void RegisterTouchpadGestureEndHandler(MLInput.ControllerTouchpadGestureDelegate callback)
         {
             MLInput.OnControllerTouchpadGestureStart += callback;
         }
 
-        public void UnregisterTouchpadGestureStartHandler(System.Action<byte, MLInputControllerTouchpadGesture> callback)
+        public void UnregisterTouchpadGestureStartHandler(MLInput.ControllerTouchpadGestureDelegate callback)
         {
             MLInput.OnControllerTouchpadGestureStart -= callback;
         }
 
-        public void UnregisterTouchpadGestureEndHandler(System.Action<byte, MLInputControllerTouchpadGesture> callback)
+        public void UnregisterTouchpadGestureEndHandler(MLInput.ControllerTouchpadGestureDelegate callback)
         {
             MLInput.OnControllerTouchpadGestureStart -= callback;
         }
 
-        public void RegisterTriggerDownHandler(System.Action<byte, float> callback)
+        public void RegisterTriggerDownHandler(MLInput.TriggerDelegate callback)
         {
             MLInput.OnTriggerDown += callback;
 
         }
 
-        public void RegisterTriggerUpHandler(System.Action<byte, float> callback)
+        public void RegisterTriggerUpHandler(MLInput.TriggerDelegate callback)
         {
             MLInput.OnTriggerUp += callback;
         }
 
-        public void UnregisterTriggerDownHandler(System.Action<byte, float> callback)
+        public void UnregisterTriggerDownHandler(MLInput.TriggerDelegate callback)
         {
             MLInput.OnTriggerDown += callback;
 
         }
 
-        public void UnregisterTriggerUpHandler(System.Action<byte, float> callback)
+        public void UnregisterTriggerUpHandler(MLInput.TriggerDelegate callback)
         {
             MLInput.OnTriggerUp += callback;
         }
