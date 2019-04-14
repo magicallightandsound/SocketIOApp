@@ -325,6 +325,9 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
+    <Reference Include="LuminMediaPlayer">
+      <HintPath>C:/Users/Rodney/Documents/MLProjects/SocketIOApp/Assets/MagicLeap/Libs/LuminMediaPlayer.dll</HintPath>
+    </Reference>
     <Reference Include="LuminUnity">
       <HintPath>C:/Users/Rodney/Documents/MLProjects/SocketIOApp/Assets/MagicLeap/Libs/LuminUnity.dll</HintPath>
     </Reference>
@@ -360,9 +363,6 @@
     </Reference>
     <Reference Include="UnityEditor.Purchasing">
       <HintPath>C:/Users/Rodney/Documents/MLProjects/SocketIOApp/Library/PackageCache/com.unity.purchasing@2.0.1/Editor/UnityEditor.Purchasing.dll</HintPath>
-    </Reference>
-    <Reference Include="LuminMediaPlayer">
-      <HintPath>C:/Users/Rodney/Documents/MLProjects/SocketIOApp/Assets/MagicLeap/Libs/LuminMediaPlayer.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.0f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

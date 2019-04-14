@@ -427,6 +427,9 @@
     <Reference Include="nunit.framework">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.0f1/Editor/Data/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="LuminMediaPlayer">
+      <HintPath>C:/Users/Rodney/Documents/MLProjects/SocketIOApp/Assets/MagicLeap/Libs/LuminMediaPlayer.dll</HintPath>
+    </Reference>
     <Reference Include="LuminUnity">
       <HintPath>C:/Users/Rodney/Documents/MLProjects/SocketIOApp/Assets/MagicLeap/Libs/LuminUnity.dll</HintPath>
     </Reference>
@@ -450,9 +453,6 @@
     </Reference>
     <Reference Include="UnityEngine.Purchasing">
       <HintPath>C:/Users/Rodney/Documents/MLProjects/SocketIOApp/Library/PackageCache/com.unity.purchasing@2.0.1/UnityEngine.Purchasing.dll</HintPath>
-    </Reference>
-    <Reference Include="LuminMediaPlayer">
-      <HintPath>C:/Users/Rodney/Documents/MLProjects/SocketIOApp/Assets/MagicLeap/Libs/LuminMediaPlayer.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.0f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>
