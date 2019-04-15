@@ -26,8 +26,8 @@ Roadmap can be found at: https://www.pivotaltracker.com/n/projects/2321432
 
 Requirements:
 - Two or more workstations 
-- Magic Leap SDK v0.19.0
-- Unity 2018.1.9f1-MLTP10
+- Magic Leap SDK v0.20.0
+- Unity 2019.1.0f1
 
 
 #
