@@ -628,7 +628,7 @@ PlayerSettings:
     m_ModelFolderPath: 
     m_PortalFolderPath: 
   luminCert:
-    m_CertPath: C:/Users/Rodney/MLCert/rodneydevcert001.cert
+    m_CertPath: /Users/rdegraci/MLCert/rodneydevcert001.cert
     m_SignPackage: 1
   luminIsChannelApp: 0
   luminVersion:
