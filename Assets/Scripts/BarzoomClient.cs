@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using Dpoch.SocketIO;
 using System;
-
+using UnityEngine;
 
 
 public class DataPayload
@@ -42,7 +42,9 @@ public class BarzoomClient : MonoBehaviour {
     private float timeSinceLastRequest = 0;
     
  
-    private GameObject sharedCube;
+
+    private List<GameObject> localGameObjects = new List<GameObject>();
+
     private List<string> memberNames = new List<string>();
     private List<string> readyMemberNames = new List<string>();
     private bool isLeader = false;
@@ -212,23 +214,68 @@ public class BarzoomClient : MonoBehaviour {
         clientState = OrcusClientState.END_EXPERIENCE;
     }
 
-    
-    private void Awake()
+    private void instantiatePrefabsIntoLocalGameObjects()
     {
-        BarzoomClient.client = this;
 
+        UnityEngine.Object[] indexables = Resources.LoadAll("GameObjects", typeof(GameObject));
+        List<UnityEngine.Object> prefabs = new List<UnityEngine.Object>(indexables);
+
+        foreach (var obj in prefabs)
+        {
+            GameObject prefab = obj as GameObject;
+            GameObject gameObject = Instantiate(prefab, Vector3.zero, Quaternion.identity) as GameObject;
+
+            gameObject.AddComponent<ActsAsBarzoomable>();
+            ActsAsBarzoomable aab = gameObject.GetComponent<ActsAsBarzoomable>();
+            aab.resourceName = gameObject.name;
+
+            gameObject.AddComponent<Placeable>();
+            Placeable placeable = gameObject.GetComponent<Placeable>();
+            placeable.onHoverMaterial = Resources.Load("Materials/Hovered") as Material;
+            placeable.onSelectedMaterial = Resources.Load("Materials/Selected") as Material;
+
+
+            gameObject.AddComponent<Rigidbody>();
+            Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
+            rigidbody.mass = 1.0f;
+            rigidbody.drag = 0f;
+            rigidbody.angularDrag = 0.05f;
+            rigidbody.useGravity = true;
+            rigidbody.isKinematic = false;
+            rigidbody.interpolation = RigidbodyInterpolation.None;
+            rigidbody.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+           
+
+            localGameObjects.Add(gameObject);
+                
+            gameObject.SetActive(true);
+        }
+    }
+
+    private void calculateTestRoomName()
+    {
         DateTime now = DateTime.Now;
 
         ///
         /// Create a test room based upon the year, month, and day
         ///
         testRoom = "T" + now.Year.ToString() + now.Month.ToString() + now.Day.ToString();
+    }
+
+    private void Awake()
+    {
+        BarzoomClient.client = this;
+        
+        calculateTestRoomName();
 
         /// 
         /// Connect to Acceptance (Staging Server) for testing
         ///
         ConnectToAcceptanceServer();
     }
+
+
 
     void Start () {
 
@@ -548,7 +595,7 @@ public class BarzoomClient : MonoBehaviour {
                         if (isLeader)  //isLeader
                         {
                             // Initialize the experience, as Leader
-                            sharedCube = Instantiate(sharedCubePrefab);
+                            instantiatePrefabsIntoLocalGameObjects();
 
                         } else {
                             // We're not the leader, however we will automatically
